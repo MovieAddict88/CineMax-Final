@@ -557,27 +557,9 @@ public class DetailsActivity extends AppCompatActivity {
     
     private void loadVideoFromServer(Server server) {
         try {
-            // Create new CustomPlayerFragment instance with the video URL
-            customPlayerFragment = CustomPlayerFragment.newInstance(
-                server.getUrl(), 
-                false, // isLive
-                "default", // videoType
-                currentEntry != null ? currentEntry.getTitle() : "Movie", // videoTitle
-                currentEntry != null ? currentEntry.getDescription() : "", // videoSubTitle
-                currentEntry != null ? currentEntry.getPoster() : "", // videoImage
-                0, // videoId
-                "movie" // videoKind
-            );
-            
-            // Show player container and hide poster
-            findViewById(R.id.player_container).setVisibility(View.VISIBLE);
-            findViewById(R.id.image_view_activity_movie_cover).setVisibility(View.GONE);
-            
-            // Replace the fragment in the player container
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.player_container, customPlayerFragment);
-            transaction.commit();
+            // Launch FullScreenActivity in landscape mode like CinemaX
+            String videoUrl = VideoServerUtils.enhanceVideoUrl(server.getUrl());
+            FullScreenActivity.start(this, videoUrl, 0, true, currentServerIndex);
             
             Log.d(TAG, "Loading video from server: " + server.getName() + " - " + server.getUrl());
             Toast.makeText(this, "Loading from " + server.getName(), Toast.LENGTH_SHORT).show();

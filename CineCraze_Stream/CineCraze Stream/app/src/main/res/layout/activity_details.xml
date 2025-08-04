@@ -105,11 +105,11 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_alignParentBottom="true"
-                        android:layout_marginRight="30dp"
-                        android:layout_marginBottom="20dp"
+                        android:layout_marginRight="24dp"
+                        android:layout_marginBottom="24dp"
                         android:src="@drawable/ic_play_arrow"
                         app:backgroundTint="#FF6B35"
-                        app:elevation="6dp"
+                        app:elevation="8dp"
                         app:fabSize="normal" />
 
                 </RelativeLayout>

@@ -1,0 +1,35 @@
+{
+  "allFiles": [
+    {
+      "file": "/storage/emulated/0/AndroidIDEProjects/CinemaX/app/src/main/java/my/cinemax/app/free/ui/activities/HomeActivity.java",
+      "selection": {
+        "end": {
+          "column": 69,
+          "index": 45180,
+          "line": 1005
+        },
+        "start": {
+          "column": 69,
+          "index": 45180,
+          "line": 1005
+        }
+      }
+    },
+    {
+      "file": "/storage/emulated/0/AndroidIDEProjects/CinemaX/app/src/main/java/my/cinemax/app/free/ui/fragments/HomeFragment.java",
+      "selection": {
+        "end": {
+          "column": 26,
+          "index": 406,
+          "line": 12
+        },
+        "start": {
+          "column": 26,
+          "index": 406,
+          "line": 12
+        }
+      }
+    }
+  ],
+  "selectedFile": "/storage/emulated/0/AndroidIDEProjects/CinemaX/app/src/main/java/my/cinemax/app/free/ui/fragments/HomeFragment.java"
+}

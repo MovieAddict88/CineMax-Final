@@ -66,6 +66,10 @@ public class FullScreenActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Set landscape orientation like CinemaX
+        setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        
         setContentView(R.layout.activity_full_screen);
 
         hideSystemUI();
