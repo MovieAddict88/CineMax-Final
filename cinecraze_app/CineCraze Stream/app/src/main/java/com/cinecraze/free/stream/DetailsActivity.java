@@ -200,6 +200,9 @@ public class DetailsActivity extends AppCompatActivity {
             // Load movie images
             loadMovieImages();
             
+            // Hide My List and Share buttons
+            hideActionButtons();
+            
             // Setup server selector
             setupServerSelector();
             
