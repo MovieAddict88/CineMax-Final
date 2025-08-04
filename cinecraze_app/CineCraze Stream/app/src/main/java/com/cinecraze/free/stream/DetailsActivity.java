@@ -355,7 +355,7 @@ public class DetailsActivity extends AppCompatActivity {
                     currentEpisode = episode;
                     currentServerIndex = 0; // Reset server index for new episode
                     updateServerSelector();
-                    // Removed setupVideoPlayer() call - video playback handled by floating action button
+                    setupVideoPlayer(); // Restored - important for episode playback
                 }
             });
             episodeRecyclerView.setAdapter(episodeAdapter);
@@ -374,7 +374,7 @@ public class DetailsActivity extends AppCompatActivity {
                     currentServerIndex = position;
                     updateServerButtonText();
                     updateServerInfo();
-                    // Removed setupVideoPlayer() call - video playback handled by floating action button
+                    setupVideoPlayer(); // Restored - important for server selection
                 }
             });
             smartServerSpinner.show(serverSpinnerButton);
@@ -401,7 +401,7 @@ public class DetailsActivity extends AppCompatActivity {
                 updateSeasonInfo();
                 setupEpisodeAdapter();
                 updateServerSelector();
-                // Removed setupVideoPlayer() call - video playback handled by floating action button
+                setupVideoPlayer(); // Restored - important for season selection
                 dialog.dismiss();
             });
             builder.show();
