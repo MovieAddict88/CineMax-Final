@@ -63,12 +63,13 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
             holder.episodeDuration.setVisibility(View.GONE);
         }
         
-        // Load episode thumbnail
+        // Load episode thumbnail with optimization
         if (episode.getThumbnail() != null && !episode.getThumbnail().isEmpty()) {
             Glide.with(context)
                 .load(episode.getThumbnail())
                 .placeholder(R.drawable.image_placeholder)
                 .error(R.drawable.image_placeholder)
+                .skipMemoryCache(false) // Use memory cache for better performance
                 .into(holder.episodeThumbnail);
         } else {
             holder.episodeThumbnail.setImageResource(R.drawable.image_placeholder);
@@ -86,8 +87,11 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
         
         // Set click listeners for direct episode play (CinemaX style)
         View.OnClickListener episodeClickListener = v -> {
+            int oldPosition = selectedEpisodePosition;
             selectedEpisodePosition = position;
-            notifyDataSetChanged();
+            // Only update the affected items instead of entire dataset for better performance
+            notifyItemChanged(oldPosition);
+            notifyItemChanged(selectedEpisodePosition);
             if (listener != null) {
                 listener.onEpisodeClick(episode, position);
             }
@@ -111,12 +115,17 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
     }
 
     public void setSelectedEpisode(int position) {
+        int oldPosition = selectedEpisodePosition;
         selectedEpisodePosition = position;
-        notifyDataSetChanged();
+        // Only update the affected items for better performance
+        notifyItemChanged(oldPosition);
+        notifyItemChanged(selectedEpisodePosition);
     }
 
     public void updateEpisodes(List<Episode> newEpisodes) {
+        // Simple update for now - can be optimized with DiffUtil later if needed
         this.episodes = newEpisodes;
+        this.selectedEpisodePosition = 0; // Reset selection
         notifyDataSetChanged();
     }
 

@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.View;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -263,7 +264,16 @@ public class DetailsActivity extends AppCompatActivity {
 
     private void setupEpisodeAdapter() {
         if (currentSeason != null && currentSeason.getEpisodes() != null && !currentSeason.getEpisodes().isEmpty()) {
-            episodeRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+            layoutManager.setInitialPrefetchItemCount(4); // Prefetch items for smoother scrolling
+            episodeRecyclerView.setLayoutManager(layoutManager);
+            
+            // Performance optimizations for smooth scrolling
+            episodeRecyclerView.setHasFixedSize(true); // Items have fixed size
+            episodeRecyclerView.setItemViewCacheSize(10); // Cache more views for smoother scrolling
+            episodeRecyclerView.setDrawingCacheEnabled(true);
+            episodeRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_LOW);
+            
             episodeAdapter = new EpisodeAdapter(this, currentSeason.getEpisodes(), new EpisodeAdapter.OnEpisodeClickListener() {
                 @Override
                 public void onEpisodeClick(Episode episode, int position) {
@@ -281,6 +291,9 @@ public class DetailsActivity extends AppCompatActivity {
                     downloadEpisode(episode);
                 }
             });
+            
+            // Enable item view type optimization if all items are the same type
+            episodeAdapter.setHasStableIds(false);
             episodeRecyclerView.setAdapter(episodeAdapter);
             
             // Select first episode by default
@@ -660,14 +673,9 @@ public class DetailsActivity extends AppCompatActivity {
             relatedRecyclerView.setAdapter(relatedAdapter);
         }
         
-        // Also setup the legacy related content RecyclerView for compatibility
+        // Hide the legacy RecyclerView to avoid duplication
         if (relatedContentRecyclerView != null) {
-            LinearLayoutManager legacyLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-            relatedContentRecyclerView.setLayoutManager(legacyLayoutManager);
-            
-            MovieAdapter legacyAdapter = new MovieAdapter(this, relatedEntries, false);
-            relatedContentRecyclerView.setAdapter(legacyAdapter);
-            relatedContentRecyclerView.setVisibility(View.VISIBLE);
+            relatedContentRecyclerView.setVisibility(View.GONE);
         }
     }
 
