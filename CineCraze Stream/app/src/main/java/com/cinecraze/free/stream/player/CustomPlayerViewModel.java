@@ -260,6 +260,14 @@ public class CustomPlayerViewModel implements Player.Listener {
         }
         mExoPlayer.setPlayWhenReady(false);
     }
+    
+    public void stop() {
+        if (mExoPlayer == null) {
+            return;
+        }
+        mExoPlayer.stop();
+        mExoPlayer.setPlayWhenReady(false);
+    }
 
     private boolean isPlaying() {
         return mExoPlayer != null && mExoPlayer.getPlayWhenReady();
