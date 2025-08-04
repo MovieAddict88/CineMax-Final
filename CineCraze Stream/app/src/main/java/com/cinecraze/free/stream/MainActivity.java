@@ -71,10 +71,10 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout searchLayout;
     private AutoCompleteTextView searchBar;
     
-    // Pagination UI elements
-    private LinearLayout paginationLayout;
-    private com.google.android.material.button.MaterialButton btnPrevious;
-    private com.google.android.material.button.MaterialButton btnNext;
+    // Floating Pagination Layout
+    private LinearLayout floatingPaginationLayout;
+    private ImageView btnPreviousPage;
+    private ImageView btnNextPage;
     
     // Filter UI elements
     private MaterialButton btnGenreFilter;
@@ -146,19 +146,19 @@ public class MainActivity extends AppCompatActivity {
         searchLayout = findViewById(R.id.search_layout);
         searchBar = findViewById(R.id.search_bar);
         
-        // Initialize pagination UI elements
-        paginationLayout = findViewById(R.id.pagination_layout);
-        btnPrevious = findViewById(R.id.btn_previous);
-        btnNext = findViewById(R.id.btn_next);
+        // Initialize floating pagination layout
+        floatingPaginationLayout = findViewById(R.id.floating_pagination_layout);
+        btnPreviousPage = findViewById(R.id.btn_previous_page);
+        btnNextPage = findViewById(R.id.btn_next_page);
         
         // Initialize filter UI elements
         btnGenreFilter = findViewById(R.id.btn_genre_filter);
         btnCountryFilter = findViewById(R.id.btn_country_filter);
         btnYearFilter = findViewById(R.id.btn_year_filter);
         
-        // Set up pagination button listeners
-        btnPrevious.setOnClickListener(v -> onPreviousPage());
-        btnNext.setOnClickListener(v -> onNextPage());
+        // Set up floating pagination button listeners
+        btnPreviousPage.setOnClickListener(v -> onPreviousPage());
+        btnNextPage.setOnClickListener(v -> onNextPage());
     }
 
     private void setupRecyclerView() {
@@ -580,8 +580,9 @@ public class MainActivity extends AppCompatActivity {
         updatePaginationUI();
         
         // Additional check to ensure Next button is properly disabled when no more data
-        if (btnNext != null && (!hasMorePages || ((currentPage + 1) * pageSize >= totalCount))) {
-            btnNext.setEnabled(false);
+        if (btnNextPage != null && (!hasMorePages || ((currentPage + 1) * pageSize >= totalCount))) {
+            btnNextPage.setEnabled(false);
+            btnNextPage.setAlpha(0.5f);
         }
         
         // Scroll to top of the list
@@ -616,40 +617,46 @@ public class MainActivity extends AppCompatActivity {
             Log.d("MainActivity", "Next page: " + currentPage + " (Total items: " + totalCount + ")");
         } else {
             Log.d("MainActivity", "Cannot go to next page. HasMore: " + hasMorePages + ", Loading: " + isLoading + ", TotalCount: " + totalCount);
-            // Ensure Next button is disabled
-            if (btnNext != null) {
-                btnNext.setEnabled(false);
+            // Ensure floating pagination buttons are disabled
+            if (btnNextPage != null) {
+                btnNextPage.setEnabled(false);
+                btnNextPage.setAlpha(0.5f);
             }
         }
     }
     
     private void updatePaginationUI() {
-        // Show pagination layout only if there are more than pageSize items
+        // Show floating pagination layout only if there are more than pageSize items
         if (totalCount > pageSize) {
-            paginationLayout.setVisibility(View.VISIBLE);
+            floatingPaginationLayout.setVisibility(View.VISIBLE);
             
-            // Update button states with additional safety checks
-            if (btnPrevious != null) {
-                btnPrevious.setEnabled(currentPage > 0 && !isLoading);
-            }
-            if (btnNext != null) {
-                // Disable Next button if no more pages or if we're at the last possible page
-                boolean canGoNext = hasMorePages && !isLoading && ((currentPage + 1) * pageSize < totalCount);
-                btnNext.setEnabled(canGoNext);
-            }
+            // Update button states based on current page
+            boolean canGoPrevious = currentPage > 0 && !isLoading;
+            boolean canGoNext = hasMorePages && !isLoading && ((currentPage + 1) * pageSize < totalCount);
+            
+            btnPreviousPage.setEnabled(canGoPrevious);
+            btnNextPage.setEnabled(canGoNext);
+            
+            // Update button alpha for visual feedback
+            btnPreviousPage.setAlpha(canGoPrevious ? 1.0f : 0.5f);
+            btnNextPage.setAlpha(canGoNext ? 1.0f : 0.5f);
         } else {
             // Hide pagination if not needed
-            paginationLayout.setVisibility(View.GONE);
+            floatingPaginationLayout.setVisibility(View.GONE);
         }
     }
     
     private void setPaginationLoading(boolean loading) {
         isLoading = loading;
-        if (btnPrevious != null) {
-            btnPrevious.setEnabled(!loading && currentPage > 0);
-        }
-        if (btnNext != null) {
-            btnNext.setEnabled(!loading && hasMorePages);
+        if (btnPreviousPage != null && btnNextPage != null) {
+            boolean canGoPrevious = currentPage > 0 && !loading;
+            boolean canGoNext = hasMorePages && !loading && ((currentPage + 1) * pageSize < totalCount);
+            
+            btnPreviousPage.setEnabled(canGoPrevious);
+            btnNextPage.setEnabled(canGoNext);
+            
+            btnPreviousPage.setAlpha(canGoPrevious ? 1.0f : 0.5f);
+            btnNextPage.setAlpha(canGoNext ? 1.0f : 0.5f);
         }
     }
 
