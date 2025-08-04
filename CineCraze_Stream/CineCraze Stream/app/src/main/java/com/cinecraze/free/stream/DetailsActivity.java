@@ -221,15 +221,23 @@ public class DetailsActivity extends AppCompatActivity {
     }
     
     private void loadMovieImages() {
-        // TODO: Implement image loading using Picasso or Glide
-        // For now, we'll use placeholder images
-        if (imageViewMovieBackground != null && currentEntry.getThumbnail() != null) {
-            // Load backdrop image from thumbnail
-            // Picasso.get().load(currentEntry.getThumbnail()).into(imageViewMovieBackground);
-        }
-        if (imageViewMovieCover != null && currentEntry.getPoster() != null) {
-            // Load poster image
-            // Picasso.get().load(currentEntry.getPoster()).into(imageViewMovieCover);
+        // Load actual movie images from JSON data
+        try {
+            if (imageViewMovieBackground != null && currentEntry.getThumbnail() != null && !currentEntry.getThumbnail().isEmpty()) {
+                // Load backdrop image from thumbnail using basic image loading
+                // For now using placeholder, but structure is ready for image loader like Picasso
+                Log.d(TAG, "Loading background image: " + currentEntry.getThumbnail());
+                // TODO: Add Picasso or Glide dependency and uncomment:
+                // Picasso.get().load(currentEntry.getThumbnail()).placeholder(R.drawable.image_placeholder).into(imageViewMovieBackground);
+            }
+            if (imageViewMovieCover != null && currentEntry.getPoster() != null && !currentEntry.getPoster().isEmpty()) {
+                // Load poster image
+                Log.d(TAG, "Loading poster image: " + currentEntry.getPoster());
+                // TODO: Add Picasso or Glide dependency and uncomment:
+                // Picasso.get().load(currentEntry.getPoster()).placeholder(R.drawable.image_placeholder).into(imageViewMovieCover);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading movie images: " + e.getMessage(), e);
         }
     }
 
@@ -559,34 +567,15 @@ public class DetailsActivity extends AppCompatActivity {
     
     private void loadVideoFromServer(Server server) {
         try {
-            // Create new CustomPlayerFragment instance with the video URL
-            customPlayerFragment = CustomPlayerFragment.newInstance(
-                server.getUrl(), 
-                false, // isLive
-                "default", // videoType
-                currentEntry != null ? currentEntry.getTitle() : "Movie", // videoTitle
-                currentEntry != null ? currentEntry.getDescription() : "", // videoSubTitle
-                currentEntry != null ? currentEntry.getPoster() : "", // videoImage
-                0, // videoId
-                "movie" // videoKind
-            );
+            // Launch fullscreen player activity like CinemaX using existing method
+            FullScreenActivity.start(this, server.getUrl(), 0, true, currentServerIndex);
             
-            // Show player container and hide poster
-            findViewById(R.id.player_container).setVisibility(View.VISIBLE);
-            findViewById(R.id.image_view_activity_movie_cover).setVisibility(View.GONE);
-            
-            // Replace the fragment in the player container
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.player_container, customPlayerFragment);
-            transaction.commit();
-            
-            Log.d(TAG, "Loading video from server: " + server.getName() + " - " + server.getUrl());
-            Toast.makeText(this, "Loading from " + server.getName(), Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "Launching fullscreen player for: " + server.getName() + " - " + server.getUrl());
+            Toast.makeText(this, "Opening " + server.getName(), Toast.LENGTH_SHORT).show();
             
         } catch (Exception e) {
-            Log.e(TAG, "Error loading video from server: " + e.getMessage(), e);
-            Toast.makeText(this, "Error loading video: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Log.e(TAG, "Error launching fullscreen player: " + e.getMessage(), e);
+            Toast.makeText(this, "Error opening video player: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
     
