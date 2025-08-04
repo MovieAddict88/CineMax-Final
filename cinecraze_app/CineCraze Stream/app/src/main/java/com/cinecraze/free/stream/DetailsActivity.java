@@ -200,10 +200,7 @@ public class DetailsActivity extends AppCompatActivity {
             // Load movie images
             loadMovieImages();
             
-            // Hide My List and Share buttons
-            hideActionButtons();
-            
-            // Setup server selector (hidden for movies, shown for series)
+            // Setup server selector
             setupServerSelector();
             
             // Setup TV Series components if it's a TV series
@@ -217,10 +214,6 @@ public class DetailsActivity extends AppCompatActivity {
                 }
                 if (episodeSelectorContainer != null) {
                     episodeSelectorContainer.setVisibility(View.GONE);
-                }
-                // Hide server selector for movies (handled by floating play button)
-                if (serverSelectorContainer != null) {
-                    serverSelectorContainer.setVisibility(View.GONE);
                 }
             }
             
