@@ -47,6 +47,9 @@ import java.util.ArrayList;
 public class DetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "DetailsActivity";
+    
+    // Flag to prevent automatic playback - only allow after user selects server
+    private boolean userHasSelectedServer = false;
 
     // UI Components
     private TextView title;
@@ -453,7 +456,16 @@ public class DetailsActivity extends AppCompatActivity {
             return;
         }
         
+        // Prevent multiple dialogs from opening simultaneously
+        if (serverSelectionDialog != null && serverSelectionDialog.isShowing()) {
+            Log.d(TAG, "Server selection dialog already showing, ignoring request");
+            return;
+        }
+        
         Log.d(TAG, "showServerSelectionDialog called with " + currentServers.size() + " servers");
+        
+        // Reset the user selection flag - user must explicitly choose again
+        userHasSelectedServer = false;
         
         // FOR NOW: ALWAYS SHOW SERVER SELECTION DIALOG
         // This ensures the user always chooses a server before playback
@@ -522,6 +534,13 @@ public class DetailsActivity extends AppCompatActivity {
     
     private void loadVideoFromServer(Server server) {
         try {
+            // SAFETY CHECK: Only allow playback if user has explicitly selected a server
+            if (!userHasSelectedServer) {
+                Log.w(TAG, "Blocking automatic video playback - user must select server first");
+                Toast.makeText(this, "Please select a server to play", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
             // Launch FullScreenActivity in landscape mode like CinemaX
             String videoUrl = VideoServerUtils.enhanceVideoUrl(server.getUrl());
             FullScreenActivity.start(this, videoUrl, 0, true, currentServerIndex);
@@ -573,10 +592,21 @@ public class DetailsActivity extends AppCompatActivity {
             // Show premium indicator if needed
             holder.imageViewServerPremium.setVisibility(View.GONE);
             
-            // Set click listener
+            // Set click listener - ONLY when user explicitly clicks
             holder.imageViewServerPlay.setOnClickListener(v -> {
-                Log.d(TAG, "Server clicked: " + position + " - " + server.getName() + " - " + server.getUrl());
+                Log.d(TAG, "User explicitly clicked server: " + position + " - " + server.getName());
+                
+                // Double-check this is a real user click, not automatic
+                if (serverSelectionDialog == null || !serverSelectionDialog.isShowing()) {
+                    Log.w(TAG, "Server click ignored - dialog not showing");
+                    return;
+                }
+                
+                // Mark that user has explicitly selected a server
+                userHasSelectedServer = true;
+                
                 String videoUrl = currentServers.get(position).getUrl();
+                Log.d(TAG, "Starting playback for user-selected URL: " + videoUrl);
                 FullScreenActivity.start(DetailsActivity.this, videoUrl, 0, true, position);
                 if (serverSelectionDialog != null) serverSelectionDialog.dismiss();
             });
