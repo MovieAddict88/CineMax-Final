@@ -89,6 +89,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:layout_marginTop="@dimen/layout_margin_small"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -99,14 +100,19 @@
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/carousel_view_pager"
                 android:layout_width="match_parent"
-                android:layout_height="200dp" />
+                android:layout_height="@dimen/carousel_height"
+                android:layout_marginBottom="@dimen/carousel_bottom_margin" />
 
             <!-- Filter Spinners Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="16dp"
+                android:paddingTop="@dimen/filter_padding_vertical"
+                android:paddingBottom="@dimen/filter_padding_vertical"
+                android:paddingLeft="@dimen/layout_margin_large"
+                android:paddingRight="@dimen/layout_margin_large"
+                android:layout_marginBottom="@dimen/filter_bottom_margin"
                 android:gravity="center"
                 android:background="@color/netflix_dark_gray">
 
@@ -163,7 +169,11 @@
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:orientation="horizontal"
-                android:padding="8dp">
+                android:paddingTop="@dimen/view_toggle_padding"
+                android:paddingBottom="@dimen/view_toggle_padding"
+                android:paddingLeft="@dimen/padding_medium"
+                android:paddingRight="@dimen/padding_medium"
+                android:layout_marginBottom="@dimen/view_toggle_bottom_margin">
 
                 <ImageView
                     android:id="@+id/grid_view_icon"
@@ -188,7 +198,10 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:clipToPadding="false"
-            android:paddingBottom="16dp" />
+            android:paddingTop="@dimen/grid_top_padding"
+            android:paddingLeft="@dimen/grid_side_padding"
+            android:paddingRight="@dimen/grid_side_padding"
+            android:paddingBottom="@dimen/recycler_bottom_padding" />
 
     </LinearLayout>
 
@@ -198,8 +211,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:layout_marginBottom="80dp"
+        android:layout_marginEnd="@dimen/pagination_end_margin"
+        android:layout_marginBottom="@dimen/pagination_bottom_margin"
         android:orientation="horizontal"
         android:visibility="gone"
         android:background="@drawable/floating_pagination_background"
@@ -207,11 +220,11 @@
 
         <ImageView
             android:id="@+id/btn_previous_page"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/pagination_button_size"
+            android:layout_height="@dimen/pagination_button_size"
             android:src="@drawable/ic_pagination_previous"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="12dp"
+            android:padding="@dimen/pagination_button_padding"
             android:contentDescription="Previous Page" />
 
         <View
@@ -222,11 +235,11 @@
 
         <ImageView
             android:id="@+id/btn_next_page"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/pagination_button_size"
+            android:layout_height="@dimen/pagination_button_size"
             android:src="@drawable/ic_pagination_next"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="12dp"
+            android:padding="@dimen/pagination_button_padding"
             android:contentDescription="Next Page" />
 
     </LinearLayout>
