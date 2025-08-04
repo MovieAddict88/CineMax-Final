@@ -59,16 +59,10 @@ public class DetailsActivity extends AppCompatActivity {
     private TextView textViewMovieDuration;
     private RatingBar ratingBarMovieRating;
     private RecyclerView recyclerViewMovieGenres;
-    // Remove My List and Share button references
-    // private LinearLayout linearLayoutMovieMyList;
-    // private LinearLayout linearLayoutMovieShare;
-    // private ImageView imageViewMovieMyList;
+    // REMOVED: My List and Share button references
     private FloatingActionButton floatingActionButtonPlay;
     
-    // Server selector components
-    private LinearLayout serverSelectorContainer;
-    private Button serverSpinnerButton;
-    private TextView serverInfoText;
+    // REMOVED: Server selector components (extra, already implemented in floating button)
     
     // Server dialog
     private Dialog serverSelectionDialog;
@@ -127,16 +121,10 @@ public class DetailsActivity extends AppCompatActivity {
         textViewMovieDuration = findViewById(R.id.text_view_activity_movie_duration);
         ratingBarMovieRating = findViewById(R.id.rating_bar_activity_movie_rating);
         recyclerViewMovieGenres = findViewById(R.id.recycle_view_activity_movie_genres);
-        // Remove My List and Share button references
-        // linearLayoutMovieMyList = findViewById(R.id.linear_layout_activity_movie_my_list);
-        // linearLayoutMovieShare = findViewById(R.id.linear_layout_movie_activity_share);
-        // imageViewMovieMyList = findViewById(R.id.image_view_activity_movie_my_list);
+        // REMOVED: My List and Share button references
         floatingActionButtonPlay = findViewById(R.id.floating_action_button_activity_movie_play);
         
-        // Initialize server selector components (will be hidden for movies)
-        serverSelectorContainer = findViewById(R.id.server_selector_container);
-        serverSpinnerButton = findViewById(R.id.server_spinner_button);
-        serverInfoText = findViewById(R.id.server_info_text);
+        // REMOVED: Server selector components (extra, already implemented in floating button)
         
         // Initialize TV Series components
         seasonSelectorContainer = findViewById(R.id.season_selector_container);
@@ -153,14 +141,11 @@ public class DetailsActivity extends AppCompatActivity {
         // Floating action button click listener (main play button)
         floatingActionButtonPlay.setOnClickListener(v -> showServerSelectionDialog());
         
-        // Remove My List and Share button click listeners
+        // REMOVED: My List and Share button click listeners
         // linearLayoutMovieMyList.setOnClickListener(v -> toggleMyList());
         // linearLayoutMovieShare.setOnClickListener(v -> shareMovie());
         
         // Legacy server/season selectors (for compatibility)
-        if (serverSpinnerButton != null) {
-            serverSpinnerButton.setOnClickListener(v -> showServerSpinner());
-        }
         if (seasonSpinnerButton != null) {
             seasonSpinnerButton.setOnClickListener(v -> showSeasonSpinner());
         }
@@ -201,7 +186,7 @@ public class DetailsActivity extends AppCompatActivity {
             loadMovieImages();
             
             // Hide My List and Share buttons
-            hideActionButtons();
+            // hideActionButtons(); // REMOVED
             
             // Setup server selector
             setupServerSelector();
@@ -226,19 +211,6 @@ public class DetailsActivity extends AppCompatActivity {
             Log.e(TAG, "No entry data received");
             Toast.makeText(this, "No content data available", Toast.LENGTH_LONG).show();
             finish();
-        }
-    }
-    
-    private void hideActionButtons() {
-        // Hide My List and Share buttons
-        LinearLayout myListButton = findViewById(R.id.linear_layout_activity_movie_my_list);
-        LinearLayout shareButton = findViewById(R.id.linear_layout_movie_activity_share);
-        
-        if (myListButton != null) {
-            myListButton.setVisibility(View.GONE);
-        }
-        if (shareButton != null) {
-            shareButton.setVisibility(View.GONE);
         }
     }
     
@@ -279,17 +251,11 @@ public class DetailsActivity extends AppCompatActivity {
             // Filter out servers with null or empty URLs
             currentServers.removeIf(server -> server.getUrl() == null || server.getUrl().trim().isEmpty());
             
-            if (!currentServers.isEmpty()) {
-                serverSelectorContainer.setVisibility(View.VISIBLE);
-                updateServerButtonText();
-                updateServerInfo();
-            } else {
-                serverSelectorContainer.setVisibility(View.GONE);
+            if (currentServers.isEmpty()) {
                 // Create fallback servers if none available
                 createFallbackServers();
             }
         } else {
-            serverSelectorContainer.setVisibility(View.GONE);
             // Create fallback servers if none available
             createFallbackServers();
         }
@@ -368,12 +334,10 @@ public class DetailsActivity extends AppCompatActivity {
                 @Override
                 public void onServerSelected(Server server, int position) {
                     currentServerIndex = position;
-                    updateServerButtonText();
-                    updateServerInfo();
                     setupVideoPlayer(); // Restored - important for server selection
                 }
             });
-            smartServerSpinner.show(serverSpinnerButton);
+            smartServerSpinner.show(seasonSpinnerButton); // Changed from serverSpinnerButton to seasonSpinnerButton
         } else {
             Toast.makeText(this, "Only one server available", Toast.LENGTH_SHORT).show();
         }
@@ -406,39 +370,6 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void updateServerButtonText() {
-        if (currentServers != null && currentServers.size() > currentServerIndex) {
-            Server server = currentServers.get(currentServerIndex);
-            String serverType = VideoServerUtils.getServerType(server.getUrl());
-            serverSpinnerButton.setText(serverType);
-        }
-    }
-
-    private void updateServerInfo() {
-        if (currentServers != null) {
-            int totalServers = currentServers.size();
-            int embedCount = 0;
-            int directCount = 0;
-            
-            for (Server server : currentServers) {
-                if (VideoServerUtils.isEmbeddedVideoUrl(server.getUrl())) {
-                    embedCount++;
-                } else {
-                    directCount++;
-                }
-            }
-            
-            StringBuilder info = new StringBuilder();
-            if (directCount > 0) info.append(directCount).append("D");
-            if (embedCount > 0) {
-                if (info.length() > 0) info.append("/");
-                info.append(embedCount).append("E");
-            }
-            
-            serverInfoText.setText(info.toString());
-        }
-    }
-
     private void updateSeasonButtonText() {
         if (currentSeason != null) {
             seasonSpinnerButton.setText("Season " + currentSeason.getSeason());
@@ -447,14 +378,14 @@ public class DetailsActivity extends AppCompatActivity {
 
     private void updateSeasonInfo() {
         if (currentSeason != null && currentSeason.getEpisodes() != null) {
-            seasonInfoText.setText(currentSeason.getEpisodes().size() + " episodes");
+            // seasonInfoText.setText(currentSeason.getEpisodes().size() + " episodes"); // REMOVED
         }
     }
 
     private void updateServerSelector() {
         if (currentServers != null && !currentServers.isEmpty()) {
-            updateServerButtonText();
-            updateServerInfo();
+            // updateServerButtonText(); // REMOVED
+            // updateServerInfo(); // REMOVED
         }
     }
     
@@ -578,7 +509,7 @@ public class DetailsActivity extends AppCompatActivity {
         }
         
         // Create bottom dialog similar to CinemaX
-        serverSelectionDialog = new Dialog(this, android.R.style.Theme_Dialog);
+        Dialog serverSelectionDialog = new Dialog(this, android.R.style.Theme_Dialog); // Changed from serverSelectionDialog to serverSelectionDialog
         serverSelectionDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         serverSelectionDialog.setCancelable(true);
         serverSelectionDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -593,7 +524,7 @@ public class DetailsActivity extends AppCompatActivity {
         RelativeLayout dialogCloseArea = serverSelectionDialog.findViewById(R.id.relative_layout_dialog_server_close);
         RecyclerView serverRecyclerView = serverSelectionDialog.findViewById(R.id.recycle_view_dialog_servers);
         
-        this.linearLayoutManagerServers = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        LinearLayoutManager linearLayoutManagerServers = new LinearLayoutManager(this, RecyclerView.VERTICAL, false); // Changed from linearLayoutManagerServers to linearLayoutManagerServers
         ServerSelectionAdapter serverAdapter = new ServerSelectionAdapter();
         serverRecyclerView.setHasFixedSize(true);
         serverRecyclerView.setAdapter(serverAdapter);
@@ -625,7 +556,7 @@ public class DetailsActivity extends AppCompatActivity {
             // Load the video using existing player infrastructure
             loadVideoFromServer(selectedServer);
             
-            if (serverSelectionDialog != null) {
+            if (serverSelectionDialog != null) { // Changed from serverSelectionDialog to serverSelectionDialog
                 serverSelectionDialog.dismiss();
             }
         }
