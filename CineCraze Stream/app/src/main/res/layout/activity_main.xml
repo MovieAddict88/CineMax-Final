@@ -188,46 +188,47 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:clipToPadding="false"
-            android:paddingBottom="80dp" />
+            android:paddingBottom="16dp" />
 
-        <!-- Pagination Controls -->
-        <LinearLayout
-            android:id="@+id/pagination_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_margin="16dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:gravity="center"
-            android:visibility="gone">
+    </LinearLayout>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_previous"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_marginEnd="24dp"
-                android:backgroundTint="@color/primary"
-                app:icon="@drawable/ic_arrow_back"
-                app:iconGravity="textStart"
-                app:iconPadding="0dp"
-                app:iconSize="24dp"
-                android:enabled="false"
-                style="@style/Widget.Material3.Button.Icon" />
+    <!-- Floating Pagination Button -->
+    <LinearLayout
+        android:id="@+id/floating_pagination_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:layout_marginBottom="80dp"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:background="@drawable/floating_pagination_background"
+        android:elevation="8dp">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_next"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_marginStart="24dp"
-                android:backgroundTint="@color/primary"
-                app:icon="@drawable/ic_arrow_forward"
-                app:iconGravity="textStart"
-                app:iconPadding="0dp"
-                app:iconSize="24dp"
-                style="@style/Widget.Material3.Button.Icon" />
+        <ImageView
+            android:id="@+id/btn_previous_page"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_pagination_previous"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="12dp"
+            android:contentDescription="Previous Page" />
 
-        </LinearLayout>
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:alpha="0.3" />
+
+        <ImageView
+            android:id="@+id/btn_next_page"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_pagination_next"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="12dp"
+            android:contentDescription="Next Page" />
+
     </LinearLayout>
 
     <LinearLayout
