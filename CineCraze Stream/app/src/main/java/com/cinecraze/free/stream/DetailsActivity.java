@@ -74,7 +74,6 @@ public class DetailsActivity extends AppCompatActivity {
     private LinearLayoutManager linearLayoutManagerServers;
     
     // TV Series components
-    private LinearLayout seasonSelectorContainer;
     private androidx.appcompat.widget.AppCompatSpinner seasonSpinner;
     private LinearLayout seriesSeasonsContainer;
     private RecyclerView episodeRecyclerView;
@@ -342,8 +341,6 @@ public class DetailsActivity extends AppCompatActivity {
                 currentSeason = currentEntry.getSeasons().get(which);
                 currentEpisode = null; // Reset episode
                 currentServerIndex = 0; // Reset server index
-                updateSeasonButtonText();
-                updateSeasonInfo();
                 setupEpisodeAdapter();
                 updateServerSelector();
                 setupVideoPlayer();
