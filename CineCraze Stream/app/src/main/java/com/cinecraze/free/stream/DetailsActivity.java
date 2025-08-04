@@ -136,15 +136,6 @@ public class DetailsActivity extends AppCompatActivity {
     private void setupClickListeners() {
         // Floating action button click listener (main play button)
         floatingActionButtonPlay.setOnClickListener(v -> showServerSelectionDialog());
-        
-        // Action buttons
-        linearLayoutMovieMyList.setOnClickListener(v -> toggleMyList());
-        linearLayoutMovieShare.setOnClickListener(v -> shareMovie());
-        
-        // Legacy server selector (for compatibility)
-        if (serverSpinnerButton != null) {
-            serverSpinnerButton.setOnClickListener(v -> showServerSpinner());
-        }
     }
 
     private void setupData() {
@@ -216,13 +207,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     private void setupServerSelector() {
         currentServers = getCurrentServers();
-        if (currentServers != null && !currentServers.isEmpty()) {
-            serverSelectorContainer.setVisibility(View.VISIBLE);
-            updateServerButtonText();
-            updateServerInfo();
-        } else {
-            serverSelectorContainer.setVisibility(View.GONE);
-        }
+        // Server selector UI components removed - now handled by floating play button dialog
     }
 
     private void setupTVSeriesComponents() {
@@ -304,21 +289,7 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void showServerSpinner() {
-        if (currentServers != null && currentServers.size() > 1) {
-            smartServerSpinner = new SmartServerSpinner(this, currentServers, currentServerIndex);
-            smartServerSpinner.setOnServerSelectedListener(new SmartServerSpinner.OnServerSelectedListener() {
-                @Override
-                public void onServerSelected(Server server, int position) {
-                    currentServerIndex = position;
-                    updateServerButtonText();
-                    updateServerInfo();
-                    setupVideoPlayer();
-                }
-            });
-            smartServerSpinner.show(serverSpinnerButton);
-        } else {
-            Toast.makeText(this, "Only one server available", Toast.LENGTH_SHORT).show();
-        }
+        // Server spinner UI removed - functionality moved to floating action button dialog
     }
 
     private void showSeasonSpinner() {
@@ -347,49 +318,18 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void updateServerButtonText() {
-        if (currentServers != null && currentServers.size() > currentServerIndex) {
-            Server server = currentServers.get(currentServerIndex);
-            String serverType = VideoServerUtils.getServerType(server.getUrl());
-            serverSpinnerButton.setText(serverType);
-        }
+        // Server button removed - no longer needed
     }
 
     private void updateServerInfo() {
-        if (currentServers != null) {
-            int totalServers = currentServers.size();
-            int embedCount = 0;
-            int directCount = 0;
-            
-            for (Server server : currentServers) {
-                if (VideoServerUtils.isEmbeddedVideoUrl(server.getUrl())) {
-                    embedCount++;
-                } else {
-                    directCount++;
-                }
-            }
-            
-            StringBuilder info = new StringBuilder();
-            if (directCount > 0) info.append(directCount).append("D");
-            if (embedCount > 0) {
-                if (info.length() > 0) info.append("/");
-                info.append(embedCount).append("E");
-            }
-            
-            serverInfoText.setText(info.toString());
-        }
+        // Server info text removed - no longer needed
     }
 
 
 
     private void updateServerSelector() {
         currentServers = getCurrentServers();
-        if (currentServers != null && !currentServers.isEmpty()) {
-            serverSelectorContainer.setVisibility(View.VISIBLE);
-            updateServerButtonText();
-            updateServerInfo();
-        } else {
-            serverSelectorContainer.setVisibility(View.GONE);
-        }
+        // Server selector UI removed - functionality moved to floating play button
     }
 
     private void setupVideoPlayer() {
@@ -574,36 +514,7 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
     
-    private void toggleMyList() {
-        // TODO: Implement My List functionality
-        if (imageViewMovieMyList != null) {
-            // Toggle the icon between add and check
-            boolean isInList = (Boolean) imageViewMovieMyList.getTag();
-            if (isInList) {
-                imageViewMovieMyList.setImageResource(R.drawable.ic_add_white_24dp);
-                imageViewMovieMyList.setTag(false);
-                Toast.makeText(this, "Removed from My List", Toast.LENGTH_SHORT).show();
-            } else {
-                imageViewMovieMyList.setImageResource(R.drawable.ic_check);
-                imageViewMovieMyList.setTag(true);
-                Toast.makeText(this, "Added to My List", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-    
-    private void shareMovie() {
-        if (currentEntry != null) {
-            String shareText = "Check out " + currentEntry.getTitle();
-            if (currentEntry.getDescription() != null) {
-                shareText += ": " + currentEntry.getDescription();
-            }
-            
-            android.content.Intent shareIntent = new android.content.Intent(android.content.Intent.ACTION_SEND);
-            shareIntent.setType("text/plain");
-            shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareText);
-            startActivity(android.content.Intent.createChooser(shareIntent, "Share Movie"));
-        }
-    }
+    // Removed toggleMyList and shareMovie methods - UI components no longer exist
     
     // Server Selection Adapter for the dialog
     public class ServerSelectionAdapter extends RecyclerView.Adapter<ServerSelectionAdapter.ServerHolder> {
@@ -682,13 +593,11 @@ public class DetailsActivity extends AppCompatActivity {
         // Initialize the repository
         DataRepository dataRepository = new DataRepository(this);
         
-        // Get related content based on genre and category
-        dataRepository.getFilteredData(
-            null, // No search query
-            currentEntry.getGenre(), // Filter by same genre
-            null, // No country filter
+        // Get related content based on country and category
+        dataRepository.getPaginatedFilteredData(
+            null, // No genre filter (Entry doesn't have getGenre method)
+            currentEntry.getCountry(), // Filter by same country
             null, // No year filter  
-            currentEntry.getMainCategory(), // Same category (movies/series)
             0, // First page
             10, // Show 10 related items
             new DataRepository.PaginatedDataCallback() {
@@ -697,7 +606,7 @@ public class DetailsActivity extends AppCompatActivity {
                     // Filter out the current entry from related content
                     List<Entry> relatedEntries = new ArrayList<>();
                     for (Entry entry : entries) {
-                        if (!entry.getId().equals(currentEntry.getId())) {
+                        if (entry.getId() != currentEntry.getId()) { // Compare int IDs
                             relatedEntries.add(entry);
                         }
                     }
