@@ -1,0 +1,50 @@
+{
+  "allFiles": [
+    {
+      "file": "/storage/emulated/0/AndroidIDEProjects1/CineCraze Stream/app/src/main/java/com/cinecraze/free/stream/player/CustomPlayerViewModel.java",
+      "selection": {
+        "end": {
+          "column": 0,
+          "index": 0,
+          "line": 0
+        },
+        "start": {
+          "column": 0,
+          "index": 0,
+          "line": 0
+        }
+      }
+    },
+    {
+      "file": "/storage/emulated/0/AndroidIDEProjects1/CineCraze Stream/app/src/main/java/com/cinecraze/free/stream/player/CustomPlayerFragment.java",
+      "selection": {
+        "end": {
+          "column": 1,
+          "index": 17568,
+          "line": 434
+        },
+        "start": {
+          "column": 1,
+          "index": 17568,
+          "line": 434
+        }
+      }
+    },
+    {
+      "file": "/storage/emulated/0/AndroidIDEProjects1/CineCraze Stream/app/src/main/java/com/cinecraze/free/stream/EmbedActivity.java",
+      "selection": {
+        "end": {
+          "column": 1,
+          "index": 13885,
+          "line": 393
+        },
+        "start": {
+          "column": 1,
+          "index": 13885,
+          "line": 393
+        }
+      }
+    }
+  ],
+  "selectedFile": "/storage/emulated/0/AndroidIDEProjects1/CineCraze Stream/app/src/main/java/com/cinecraze/free/stream/player/CustomPlayerFragment.java"
+}
