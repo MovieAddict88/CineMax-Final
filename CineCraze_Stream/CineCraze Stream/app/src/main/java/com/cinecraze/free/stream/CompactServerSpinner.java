@@ -65,11 +65,18 @@ public class CompactServerSpinner {
                 }
                 
                 TextView serverName = view.findViewById(R.id.server_name);
+                TextView serverNameNew = view.findViewById(R.id.text_view_server_name);
                 View selectedIndicator = view.findViewById(R.id.selected_indicator);
                 
                 if (position < servers.size()) {
                     Server server = servers.get(position);
-                    serverName.setText(server.getName());
+                    
+                    // Use new layout components if available, fallback to legacy
+                    if (serverNameNew != null) {
+                        serverNameNew.setText(server.getName());
+                    } else if (serverName != null) {
+                        serverName.setText(server.getName());
+                    }
                     
                     // Show/hide selection indicator
                     if (position == currentServerIndex) {

@@ -71,11 +71,18 @@ public class FilterSpinner {
                 }
                 
                 TextView filterName = view.findViewById(R.id.server_name);
+                TextView filterNameNew = view.findViewById(R.id.text_view_server_name);
                 View selectedIndicator = view.findViewById(R.id.selected_indicator);
                 
                 if (position < filterValues.size()) {
                     String filterValue = filterValues.get(position);
-                    filterName.setText(filterValue);
+                    
+                    // Use new layout components if available, fallback to legacy
+                    if (filterNameNew != null) {
+                        filterNameNew.setText(filterValue);
+                    } else if (filterName != null) {
+                        filterName.setText(filterValue);
+                    }
                     
                     // Show/hide selection indicator
                     boolean isSelected = (currentFilter == null && position == 0) || 

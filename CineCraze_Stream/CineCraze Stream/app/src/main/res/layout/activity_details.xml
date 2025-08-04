@@ -43,17 +43,25 @@
                         app:cardCornerRadius="15dp"
                         app:cardElevation="10dp">
 
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="10dp">
+                                                 <RelativeLayout
+                             android:layout_width="match_parent"
+                             android:layout_height="wrap_content"
+                             android:paddingTop="10dp">
 
-                            <ImageView
-                                android:id="@+id/image_view_activity_movie_cover"
-                                android:layout_width="match_parent"
-                                android:layout_height="300dp"
-                                android:scaleType="centerCrop"
-                                android:src="@drawable/image_placeholder" />
+                             <ImageView
+                                 android:id="@+id/image_view_activity_movie_cover"
+                                 android:layout_width="match_parent"
+                                 android:layout_height="300dp"
+                                 android:scaleType="centerCrop"
+                                 android:src="@drawable/image_placeholder" />
+                                 
+                             <!-- Player Container for video playback -->
+                             <FrameLayout
+                                 android:id="@+id/player_container"
+                                 android:layout_width="match_parent"
+                                 android:layout_height="300dp"
+                                 android:background="@android:color/black"
+                                 android:visibility="gone" />
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
@@ -242,16 +250,24 @@
                             android:textColor="@android:color/white"
                             android:layout_marginEnd="8dp" />
 
-                        <Button
-                            android:id="@+id/server_spinner_button"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Select Server"
-                            android:textAllCaps="false"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                                                 <Button
+                             android:id="@+id/server_spinner_button"
+                             android:layout_width="0dp"
+                             android:layout_height="wrap_content"
+                             android:layout_weight="1"
+                             android:text="Select Server"
+                             android:textAllCaps="false"
+                             style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                             
+                         <TextView
+                             android:id="@+id/server_info_text"
+                             android:layout_width="wrap_content"
+                             android:layout_height="wrap_content"
+                             android:layout_marginStart="8dp"
+                             android:textColor="@android:color/white"
+                             android:textSize="12sp" />
 
-                    </LinearLayout>
+                     </LinearLayout>
 
                     <!-- Season Selector for TV Series -->
                     <LinearLayout
@@ -270,16 +286,24 @@
                             android:textColor="@android:color/white"
                             android:layout_marginEnd="8dp" />
 
-                        <Button
-                            android:id="@+id/season_spinner_button"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Select Season"
-                            android:textAllCaps="false"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                                                 <Button
+                             android:id="@+id/season_spinner_button"
+                             android:layout_width="0dp"
+                             android:layout_height="wrap_content"
+                             android:layout_weight="1"
+                             android:text="Select Season"
+                             android:textAllCaps="false"
+                             style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                             
+                         <TextView
+                             android:id="@+id/season_info_text"
+                             android:layout_width="wrap_content"
+                             android:layout_height="wrap_content"
+                             android:layout_marginStart="8dp"
+                             android:textColor="@android:color/white"
+                             android:textSize="12sp" />
 
-                    </LinearLayout>
+                     </LinearLayout>
 
                     <!-- Episode Selector for TV Series -->
                     <LinearLayout
@@ -348,15 +372,23 @@
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/recycle_view_activity_activity_movie_more_movies"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp" />
+                                                 <androidx.recyclerview.widget.RecyclerView
+                             android:id="@+id/recycle_view_activity_activity_movie_more_movies"
+                             android:layout_width="match_parent"
+                             android:layout_height="wrap_content"
+                             android:layout_marginTop="8dp" />
+                             
+                         <!-- Legacy Related Content RecyclerView for compatibility -->
+                         <androidx.recyclerview.widget.RecyclerView
+                             android:id="@+id/related_content_recycler_view"
+                             android:layout_width="match_parent"
+                             android:layout_height="wrap_content"
+                             android:layout_marginTop="8dp"
+                             android:visibility="gone" />
 
-                    </LinearLayout>
+                     </LinearLayout>
 
-                </LinearLayout>
+                 </LinearLayout>
 
             </LinearLayout>
         </ScrollView>

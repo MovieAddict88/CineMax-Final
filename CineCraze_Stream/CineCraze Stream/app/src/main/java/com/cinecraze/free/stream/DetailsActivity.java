@@ -179,17 +179,17 @@ public class DetailsActivity extends AppCompatActivity {
             }
             
             // Set movie details if available
-            if (textViewMovieYear != null && currentEntry.getYear() != null) {
+            if (textViewMovieYear != null && currentEntry.getYear() > 0) {
                 textViewMovieYear.setText(String.valueOf(currentEntry.getYear()));
             }
             if (textViewMovieDuration != null && currentEntry.getDuration() != null) {
                 textViewMovieDuration.setText(currentEntry.getDuration() + " min");
             }
-            if (ratingBarMovieRating != null && currentEntry.getRating() != null) {
+            if (ratingBarMovieRating != null && currentEntry.getRating() > 0) {
                 try {
-                    float rating = Float.parseFloat(currentEntry.getRating());
+                    float rating = currentEntry.getRating();
                     ratingBarMovieRating.setRating(rating / 2.0f); // Convert to 5-star scale
-                } catch (NumberFormatException e) {
+                } catch (Exception e) {
                     ratingBarMovieRating.setVisibility(View.GONE);
                 }
             }
@@ -223,13 +223,13 @@ public class DetailsActivity extends AppCompatActivity {
     private void loadMovieImages() {
         // TODO: Implement image loading using Picasso or Glide
         // For now, we'll use placeholder images
-        if (imageViewMovieBackground != null && currentEntry.getBackdropUrl() != null) {
-            // Load backdrop image
-            // Picasso.get().load(currentEntry.getBackdropUrl()).into(imageViewMovieBackground);
+        if (imageViewMovieBackground != null && currentEntry.getThumbnail() != null) {
+            // Load backdrop image from thumbnail
+            // Picasso.get().load(currentEntry.getThumbnail()).into(imageViewMovieBackground);
         }
-        if (imageViewMovieCover != null && currentEntry.getPosterUrl() != null) {
+        if (imageViewMovieCover != null && currentEntry.getPoster() != null) {
             // Load poster image
-            // Picasso.get().load(currentEntry.getPosterUrl()).into(imageViewMovieCover);
+            // Picasso.get().load(currentEntry.getPoster()).into(imageViewMovieCover);
         }
     }
 
@@ -559,13 +559,27 @@ public class DetailsActivity extends AppCompatActivity {
     
     private void loadVideoFromServer(Server server) {
         try {
-            // Use existing CustomPlayerFragment to play the video
-            if (customPlayerFragment == null) {
-                setupVideoPlayer();
-            }
+            // Create new CustomPlayerFragment instance with the video URL
+            customPlayerFragment = CustomPlayerFragment.newInstance(
+                server.getUrl(), 
+                false, // isLive
+                "default", // videoType
+                currentEntry != null ? currentEntry.getTitle() : "Movie", // videoTitle
+                currentEntry != null ? currentEntry.getDescription() : "", // videoSubTitle
+                currentEntry != null ? currentEntry.getPoster() : "", // videoImage
+                0, // videoId
+                "movie" // videoKind
+            );
             
-            // Load video URL in the player
-            customPlayerFragment.loadVideo(server.getUrl());
+            // Show player container and hide poster
+            findViewById(R.id.player_container).setVisibility(View.VISIBLE);
+            findViewById(R.id.image_view_activity_movie_cover).setVisibility(View.GONE);
+            
+            // Replace the fragment in the player container
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.player_container, customPlayerFragment);
+            transaction.commit();
             
             Log.d(TAG, "Loading video from server: " + server.getName() + " - " + server.getUrl());
             Toast.makeText(this, "Loading from " + server.getName(), Toast.LENGTH_SHORT).show();
@@ -625,16 +639,12 @@ public class DetailsActivity extends AppCompatActivity {
             
             // Set server info (quality/type info)
             String serverInfo = "Auto Quality";
-            if (server.getQuality() != null) {
-                serverInfo = server.getQuality();
-            }
+            // TODO: Add quality field to Server model if needed
             holder.textViewServerInfo.setText(serverInfo);
             
             // Set quality badge
             String quality = "HD";
-            if (server.getQuality() != null) {
-                quality = server.getQuality().toUpperCase();
-            }
+            // TODO: Determine quality from server URL or add field to model
             holder.textViewServerQuality.setText(quality);
             
             // Set server type icon
