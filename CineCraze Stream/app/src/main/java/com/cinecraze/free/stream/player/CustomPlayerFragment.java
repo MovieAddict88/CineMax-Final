@@ -102,7 +102,12 @@ public class CustomPlayerFragment extends Fragment {
     public void onPause() {
         super.onPause();
         if (mCustomPlayerViewModel != null && !isEmbeddedVideo) {
-            mCustomPlayerViewModel.pause();
+            // Check if the activity is finishing to determine if we should stop or just pause
+            if (getActivity() != null && getActivity().isFinishing()) {
+                mCustomPlayerViewModel.stop();
+            } else {
+                mCustomPlayerViewModel.pause();
+            }
         }
         if (webView != null && isEmbeddedVideo) {
             webView.onPause();
@@ -329,6 +334,8 @@ public class CustomPlayerFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         if (!isEmbeddedVideo && mCustomPlayerViewModel != null) {
+            // Stop playback before releasing to ensure no background audio
+            mCustomPlayerViewModel.stop();
             mCustomPlayerViewModel.releasePlayer();
         }
         if (webView != null && isEmbeddedVideo) {

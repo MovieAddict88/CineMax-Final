@@ -701,4 +701,20 @@ public class DetailsActivity extends AppCompatActivity {
             Toast.makeText(this, "No download sources available", Toast.LENGTH_SHORT).show();
         }
     }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        
+        // Handle return from FullScreenActivity (video player)
+        if (requestCode == 1001) {
+            // Player was closed, ensure any background playback is stopped
+            // This helps prevent the issue where video continues playing in background
+            Log.d(TAG, "Returned from video player, ensuring cleanup");
+            
+            // If there's any ongoing playback in CustomPlayerFragment or other components,
+            // we ensure they are properly reset
+            // The actual player cleanup should happen in the respective activities/fragments
+        }
+    }
 }

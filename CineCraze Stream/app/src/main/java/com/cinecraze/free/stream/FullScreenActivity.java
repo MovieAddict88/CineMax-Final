@@ -341,15 +341,26 @@ public class FullScreenActivity extends AppCompatActivity implements
     @Override
     protected void onPause() {
         super.onPause();
-        if (player != null && !isFinishing()) {
-            player.pause();
+        if (player != null) {
+            if (isFinishing()) {
+                // When finishing (user exiting), stop and release the player completely
+                player.stop();
+                player.release();
+                player = null;
+            } else {
+                // When just pausing (e.g., switching apps), only pause
+                player.pause();
+            }
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        // Player should already be released in onPause when finishing,
+        // but add safety check in case onPause wasn't called
         if (player != null) {
+            player.stop();
             player.release();
             player = null;
         }
