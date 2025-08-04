@@ -575,6 +575,7 @@ public class DetailsActivity extends AppCompatActivity {
             
             // Set click listener
             holder.imageViewServerPlay.setOnClickListener(v -> {
+                Log.d(TAG, "Server clicked: " + position + " - " + server.getName() + " - " + server.getUrl());
                 String videoUrl = currentServers.get(position).getUrl();
                 FullScreenActivity.start(DetailsActivity.this, videoUrl, 0, true, position);
                 if (serverSelectionDialog != null) serverSelectionDialog.dismiss();
