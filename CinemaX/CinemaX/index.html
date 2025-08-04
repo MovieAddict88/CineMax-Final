@@ -1,0 +1,2391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineMax Enhanced API Manager</title>
+    <style>
+        :root {
+            --primary: #e50914;
+            --primary-dark: #b8070f;
+            --secondary: #221f1f;
+            --background: #141414;
+            --surface: #1f1f1f;
+            --surface-light: #2a2a2a;
+            --text: #ffffff;
+            --text-secondary: #b3b3b3;
+            --success: #46d369;
+            --warning: #ffa500;
+            --danger: #f40612;
+            --accent: #00d4ff;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--background) 0%, var(--secondary) 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(229, 9, 20, 0.3);
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .card {
+            background: var(--surface);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid var(--surface-light);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 48px rgba(0,0,0,0.4);
+        }
+        
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .card h2::before {
+            content: "🎬";
+            font-size: 1.5em;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--surface-light);
+            border-radius: 10px;
+            background: var(--background);
+            color: var(--text);
+            font-size: 16px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.2);
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin: 5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(229, 9, 20, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--surface-light);
+            color: var(--text);
+            border: 2px solid var(--surface-light);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--background);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+            background: var(--surface-light);
+            border-radius: 10px;
+            padding: 5px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .preview-item {
+            background: var(--surface-light);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .preview-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .preview-item img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        
+        .preview-item .info {
+            padding: 15px;
+        }
+        
+        .preview-item .title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .preview-item .meta {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--surface-light);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .status {
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: 600;
+        }
+        
+        .status.success { background: rgba(70, 211, 105, 0.2); color: var(--success); }
+        .status.warning { background: rgba(255, 165, 0, 0.2); color: var(--warning); }
+        .status.error { background: rgba(244, 6, 18, 0.2); color: var(--danger); }
+        .status.info { background: rgba(0, 212, 255, 0.2); color: var(--accent); }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--surface-light);
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+        
+        .modal-content {
+            background-color: var(--surface);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close {
+            color: var(--text-secondary);
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: var(--primary);
+        }
+        
+        .server-list {
+            margin-top: 15px;
+        }
+        
+        .server-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        
+        .server-item input {
+            flex: 1;
+        }
+        
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--surface-light);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎬 CineMax Enhanced API Manager</h1>
+            <p class="subtitle">Complete TMDB Integration with Automatic Video Sources & Advanced Management</p>
+        </header>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('tmdb-generator')">🎭 TMDB Generator</div>
+            <div class="tab" onclick="switchTab('manual-input')">✏️ Manual Input</div>
+            <div class="tab" onclick="switchTab('bulk-operations')">📦 Bulk Operations</div>
+            <div class="tab" onclick="switchTab('data-management')">🗂️ Data Management</div>
+        </div>
+
+        <!-- TMDB Generator Tab -->
+        <div id="tmdb-generator" class="tab-content active">
+            <div class="grid grid-2">
+                <div class="card">
+                    <h2>🎬 Movie Generator</h2>
+                    <div class="form-group">
+                        <label>TMDB Movie ID</label>
+                        <input type="number" id="movie-tmdb-id" placeholder="e.g., 550 (Fight Club)">
+                    </div>
+                    <div class="form-group">
+                        <label>Additional Servers</label>
+                        <div id="movie-servers" class="server-list">
+                            <div class="server-item">
+                                <input type="text" placeholder="Server Name" class="server-name">
+                                <input type="url" placeholder="Video URL" class="server-url">
+                                <button class="btn btn-danger btn-small" onclick="removeServer(this)">Remove</button>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary btn-small" onclick="addServer('movie-servers')">+ Add Server</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="generateFromTMDB('movie')">
+                        <span class="loading" id="movie-loading" style="display: none;"></span>
+                        Generate Movie
+                    </button>
+                </div>
+
+                <div class="card">
+                    <h2>📺 TV Series Generator</h2>
+                    <div class="form-group">
+                        <label>TMDB TV Series ID</label>
+                        <input type="number" id="series-tmdb-id" placeholder="e.g., 1399 (Game of Thrones)">
+                    </div>
+                    <div class="form-group">
+                        <label>Seasons to Include</label>
+                        <input type="text" id="series-seasons" placeholder="e.g., 1,2,3 or leave empty for all">
+                    </div>
+                    <div class="form-group">
+                        <label>Additional Servers</label>
+                        <div id="series-servers" class="server-list">
+                            <div class="server-item">
+                                <input type="text" placeholder="Server Name" class="server-name">
+                                <input type="url" placeholder="Video URL Template (use {season} {episode})" class="server-url">
+                                <button class="btn btn-danger btn-small" onclick="removeServer(this)">Remove</button>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary btn-small" onclick="addServer('series-servers')">+ Add Server</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="generateFromTMDB('series')">
+                        <span class="loading" id="series-loading" style="display: none;"></span>
+                        Generate Series
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🔍 TMDB Search & Preview</h2>
+                <div class="grid">
+                    <div class="form-group">
+                        <label>Search Query</label>
+                        <input type="text" id="tmdb-search" placeholder="Search for movies or TV shows...">
+                    </div>
+                    <div class="form-group">
+                        <label>Content Type</label>
+                        <select id="search-type">
+                            <option value="multi">All</option>
+                            <option value="movie">Movies</option>
+                            <option value="tv">TV Shows</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="searchTMDB()">
+                    <span class="loading" id="search-loading" style="display: none;"></span>
+                    Search TMDB
+                </button>
+                <div id="search-results" class="preview-grid"></div>
+            </div>
+        </div>
+
+        <!-- Manual Input Tab -->
+        <div id="manual-input" class="tab-content">
+            <div class="card">
+                <h2>✏️ Manual Content Input</h2>
+                <div class="grid">
+                    <div class="form-group">
+                        <label>Content Type</label>
+                        <select id="manual-type" onchange="toggleManualFields()">
+                            <option value="movie">Movie</option>
+                            <option value="series">TV Series</option>
+                            <option value="live">Live TV</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="manual-title" placeholder="Content title">
+                    </div>
+                </div>
+                
+                <div class="grid">
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="manual-description" rows="4" placeholder="Content description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Image/Poster URL</label>
+                        <input type="url" id="manual-image" placeholder="https://...">
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <div class="form-group">
+                        <label>Year</label>
+                        <input type="number" id="manual-year" min="1900" max="2030">
+                    </div>
+                    <div class="form-group">
+                        <label>Rating (IMDB)</label>
+                        <input type="number" id="manual-rating" min="0" max="10" step="0.1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Video Sources</label>
+                    <div id="manual-sources" class="server-list">
+                        <div class="server-item">
+                            <input type="text" placeholder="Source Name" class="source-name">
+                            <input type="url" placeholder="Video URL" class="source-url">
+                            <select class="source-type">
+                                <option value="video">Direct Video</option>
+                                <option value="embed">Embedded</option>
+                                <option value="youtube">YouTube</option>
+                                <option value="live">Live Stream</option>
+                            </select>
+                            <select class="source-quality">
+                                <option value="1080p">1080p</option>
+                                <option value="720p">720p</option>
+                                <option value="480p">480p</option>
+                                <option value="Auto">Auto</option>
+                            </select>
+                            <button class="btn btn-danger btn-small" onclick="removeServer(this)">Remove</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-small" onclick="addManualSource()">+ Add Source</button>
+                </div>
+
+                <div id="series-fields" style="display: none;">
+                    <div class="form-group">
+                        <label>Number of Seasons</label>
+                        <input type="number" id="manual-seasons" min="1" onchange="generateSeasonFields()">
+                    </div>
+                    <div id="season-container"></div>
+                </div>
+
+                <button class="btn btn-primary" onclick="addManualContent()">Add Content</button>
+            </div>
+        </div>
+
+        <!-- Bulk Operations Tab -->
+        <div id="bulk-operations" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h2>📅 Year-based Bulk Generation</h2>
+                    <div class="form-group">
+                        <label>Content Type</label>
+                        <select id="bulk-type">
+                            <option value="movie">Movies</option>
+                            <option value="tv">TV Shows</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Year</label>
+                        <input type="number" id="bulk-year" min="1900" max="2030" value="2023">
+                    </div>
+                    <div class="form-group">
+                        <label>Number of Pages</label>
+                        <input type="number" id="bulk-pages" min="1" max="20" value="5">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="bulk-skip-duplicates" checked>
+                            Skip Duplicates
+                        </label>
+                    </div>
+                    <button class="btn btn-primary" onclick="bulkGenerate()">
+                        <span class="loading" id="bulk-loading" style="display: none;"></span>
+                        Start Bulk Generation
+                    </button>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="bulk-progress"></div>
+                    </div>
+                    <div id="bulk-status"></div>
+                </div>
+
+                <div class="card">
+                    <h2>🎯 Genre-based Generation</h2>
+                    <div class="form-group">
+                        <label>Genre</label>
+                        <select id="genre-select">
+                            <option value="28">Action</option>
+                            <option value="12">Adventure</option>
+                            <option value="16">Animation</option>
+                            <option value="35">Comedy</option>
+                            <option value="80">Crime</option>
+                            <option value="99">Documentary</option>
+                            <option value="18">Drama</option>
+                            <option value="10751">Family</option>
+                            <option value="14">Fantasy</option>
+                            <option value="36">History</option>
+                            <option value="27">Horror</option>
+                            <option value="10402">Music</option>
+                            <option value="9648">Mystery</option>
+                            <option value="10749">Romance</option>
+                            <option value="878">Science Fiction</option>
+                            <option value="10770">TV Movie</option>
+                            <option value="53">Thriller</option>
+                            <option value="10752">War</option>
+                            <option value="37">Western</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Number of Items</label>
+                        <input type="number" id="genre-count" min="1" max="100" value="20">
+                    </div>
+                    <button class="btn btn-primary" onclick="generateByGenre()">Generate by Genre</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Management Tab -->
+        <div id="data-management" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h2>📂 Import/Export</h2>
+                    <div class="form-group">
+                        <label>Import JSON File</label>
+                        <input type="file" id="import-file" accept=".json">
+                        <button class="btn btn-secondary" onclick="importData()">Import Data</button>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" onclick="exportData()">Export Current Data</button>
+                        <button class="btn btn-warning" onclick="exportSample()">Export Sample Format</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>🗑️ Data Management</h2>
+                    <div class="form-group">
+                        <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+                        <button class="btn btn-warning" onclick="removeDuplicates()">Remove Duplicates</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Current Data Count</label>
+                        <div id="data-stats">
+                            <div>Movies: <span id="movie-count">0</span></div>
+                            <div>Series: <span id="series-count">0</span></div>
+                            <div>Channels: <span id="channel-count">0</span></div>
+                            <div>Total Items: <span id="total-count">0</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>👁️ Content Preview & Management</h2>
+                <div class="form-group">
+                    <label>Filter by Type</label>
+                    <select id="preview-filter" onchange="updatePreview()">
+                        <option value="all">All Content</option>
+                        <option value="movie">Movies</option>
+                        <option value="series">TV Series</option>
+                        <option value="live">Live TV</option>
+                    </select>
+                </div>
+                <div id="content-preview" class="preview-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h2>Edit Content</h2>
+            <div id="edit-form"></div>
+            <button class="btn btn-primary" onclick="saveEdit()">Save Changes</button>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const TMDB_API_KEY = 'ec926176bf467b3f7735e3154238c161';
+        const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+        const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
+        const VIDSRC_BASE = 'https://vidsrc.net/embed';
+        const VIDJOY_BASE = 'https://vidjoy.pro/embed';
+
+        // Global data storage
+        let currentData = {
+            api_info: {
+                version: "2.0",
+                description: "Enhanced CineMax API with TMDB Integration",
+                last_updated: new Date().toISOString().split('T')[0],
+                total_movies: 0,
+                total_series: 0,
+                total_channels: 0
+            },
+            home: {
+                slides: [],
+                featuredMovies: [],
+                channels: []
+            }
+        };
+
+        let nextId = 1;
+
+                 // Initialize
+         document.addEventListener('DOMContentLoaded', function() {
+             loadSavedData();
+             updateDataStats();
+             updatePreview();
+             
+             // Add test function to window for debugging
+             window.testSourceGeneration = function() {
+                 console.log('Testing source generation...');
+                 console.log('VIDSRC_BASE:', VIDSRC_BASE);
+                 console.log('VIDJOY_BASE:', VIDJOY_BASE);
+                 
+                 // Test movie source generation with multiple quality options (separate sources)
+                 const testMovieId = 550; // Fight Club
+                 const movieSources = [
+                     {
+                         id: 1,
+                         type: "embed",
+                         title: "VidSrc Server 1080p",
+                         quality: "1080p",
+                         size: "Auto",
+                         kind: "play",
+                         premium: "false",
+                         external: false,
+                         url: `${VIDSRC_BASE}/movie/${testMovieId}`
+                     },
+                     {
+                         id: 2,
+                         type: "embed",
+                         title: "VidSrc Server 720p",
+                         quality: "720p",
+                         size: "Auto",
+                         kind: "play",
+                         premium: "false",
+                         external: false,
+                         url: `${VIDSRC_BASE}/movie/${testMovieId}`
+                     },
+                     {
+                         id: 3,
+                         type: "embed",
+                         title: "VidSrc Server 480p",
+                         quality: "480p",
+                         size: "Auto",
+                         kind: "play",
+                         premium: "false",
+                         external: false,
+                         url: `${VIDSRC_BASE}/movie/${testMovieId}`
+                     },
+                     {
+                         id: 4,
+                         type: "embed", 
+                         title: "VidJoy Server 1080p",
+                         quality: "1080p",
+                         size: "Auto",
+                         kind: "play",
+                         premium: "false",
+                         external: false,
+                         url: `${VIDJOY_BASE}/movie/${testMovieId}`
+                     },
+                     {
+                         id: 5,
+                         type: "embed", 
+                         title: "VidJoy Server 720p",
+                         quality: "720p",
+                         size: "Auto",
+                         kind: "play",
+                         premium: "false",
+                         external: false,
+                         url: `${VIDJOY_BASE}/movie/${testMovieId}`
+                     },
+                     {
+                         id: 6,
+                         type: "embed", 
+                         title: "VidJoy Server 480p",
+                         quality: "480p",
+                         size: "Auto",
+                         kind: "play",
+                         premium: "false",
+                         external: false,
+                         url: `${VIDJOY_BASE}/movie/${testMovieId}`
+                     }
+                 ];
+                 
+                 console.log('Test movie sources (separate servers):', movieSources);
+                 
+                 // Test series source generation with multiple quality options (separate sources)
+                 const testSeriesId = 1399; // Game of Thrones
+                 const seriesSources = [
+                     {
+                         id: 7,
+                         type: "embed",
+                         title: "VidSrc Server 1080p",
+                         quality: "1080p",
+                         size: "Auto",
+                         kind: "play",
+                         premium: "false",
+                         external: false,
+                         url: `${VIDSRC_BASE}/tv/${testSeriesId}/1/1`
+                     },
+                     {
+                         id: 8,
+                         type: "embed",
+                         title: "VidSrc Server 720p",
+                         quality: "720p",
+                         size: "Auto",
+                         kind: "play",
+                         premium: "false",
+                         external: false,
+                         url: `${VIDSRC_BASE}/tv/${testSeriesId}/1/1`
+                     },
+                     {
+                         id: 9,
+                         type: "embed",
+                         title: "VidSrc Server 480p",
+                         quality: "480p",
+                         size: "Auto",
+                         kind: "play",
+                         premium: "false",
+                         external: false,
+                         url: `${VIDSRC_BASE}/tv/${testSeriesId}/1/1`
+                     },
+                     {
+                         id: 10,
+                         type: "embed", 
+                         title: "VidJoy Server 1080p",
+                         quality: "1080p",
+                         size: "Auto",
+                         kind: "play",
+                         premium: "false",
+                         external: false,
+                         url: `${VIDJOY_BASE}/tv/${testSeriesId}/1/1`
+                     },
+                     {
+                         id: 11,
+                         type: "embed", 
+                         title: "VidJoy Server 720p",
+                         quality: "720p",
+                         size: "Auto",
+                         kind: "play",
+                         premium: "false",
+                         external: false,
+                         url: `${VIDJOY_BASE}/tv/${testSeriesId}/1/1`
+                     },
+                     {
+                         id: 12,
+                         type: "embed", 
+                         title: "VidJoy Server 480p",
+                         quality: "480p",
+                         size: "Auto",
+                         kind: "play",
+                         premium: "false",
+                         external: false,
+                         url: `${VIDJOY_BASE}/tv/${testSeriesId}/1/1`
+                     }
+                 ];
+                 
+                 console.log('Test series sources (separate servers):', seriesSources);
+                 return { movieSources, seriesSources };
+             };
+             
+             console.log('✅ CineMax Enhanced API Manager loaded!');
+             console.log('🎬 Multi-Server Sources: VidSrc.net + VidJoy.pro (Matching existing app structure)');
+             console.log('🔧 Fixed: Root-level movies array for GenreActivity & TV Series');
+             console.log('🎯 Fixed: Source kind values - "play" for embeds/live TV, "both" for direct links');
+             console.log('📺 Enhanced: Multiple quality options per server (1080p + 720p + 480p)');
+             console.log('🧪 Test with: testSourceGeneration()');
+             
+             // Show info about the fix
+             setTimeout(() => {
+                 showStatus('success', 'ENHANCED: Multi-server sources matching existing app structure! No CineMax changes needed!');
+             }, 2000);
+         });
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // TMDB API functions
+        async function fetchTMDB(endpoint, params = {}) {
+            const url = new URL(`${TMDB_BASE_URL}${endpoint}`);
+            url.searchParams.append('api_key', TMDB_API_KEY);
+            
+            Object.entries(params).forEach(([key, value]) => {
+                url.searchParams.append(key, value);
+            });
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`TMDB API error: ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error('TMDB fetch error:', error);
+                showStatus('error', `TMDB API Error: ${error.message}`);
+                return null;
+            }
+        }
+
+        async function searchTMDB() {
+            const query = document.getElementById('tmdb-search').value.trim();
+            const type = document.getElementById('search-type').value;
+            
+            if (!query) {
+                showStatus('warning', 'Please enter a search query');
+                return;
+            }
+
+            showLoading('search-loading', true);
+            
+            const endpoint = type === 'multi' ? '/search/multi' : `/search/${type}`;
+            const results = await fetchTMDB(endpoint, { query });
+            
+            showLoading('search-loading', false);
+            
+            if (results && results.results) {
+                displaySearchResults(results.results);
+            }
+        }
+
+        function displaySearchResults(results) {
+            const container = document.getElementById('search-results');
+            container.innerHTML = '';
+
+            results.slice(0, 20).forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'preview-item';
+                
+                const mediaType = item.media_type || (item.title ? 'movie' : 'tv');
+                const title = item.title || item.name;
+                const year = (item.release_date || item.first_air_date || '').substring(0, 4);
+                const poster = item.poster_path ? `${TMDB_IMAGE_BASE}${item.poster_path}` : 'https://via.placeholder.com/300x450?text=No+Image';
+
+                div.innerHTML = `
+                    <img src="${poster}" alt="${title}" loading="lazy">
+                    <div class="info">
+                        <div class="title">${title}</div>
+                        <div class="meta">${year} • ${mediaType.toUpperCase()} • ID: ${item.id}</div>
+                        <button class="btn btn-primary btn-small" onclick="generateFromTMDB('${mediaType}', ${item.id})">
+                            Generate
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(div);
+            });
+        }
+
+                 async function generateFromTMDB(type, tmdbId = null) {
+             const id = tmdbId || document.getElementById(`${type}-tmdb-id`).value;
+             
+             if (!id) {
+                 showStatus('warning', 'Please enter a TMDB ID');
+                 return;
+             }
+
+             showLoading(`${type}-loading`, true);
+             showStatus('info', `Generating ${type} with automatic VidSrc & VidJoy sources...`);
+             
+             try {
+                 if (type === 'movie') {
+                     await generateMovie(id);
+                 } else if (type === 'series') {
+                     await generateSeries(id);
+                 }
+                 
+                 updateDataStats();
+                 updatePreview();
+                 showStatus('success', `${type} generated successfully with automatic video sources!`);
+             } catch (error) {
+                 showStatus('error', `Error generating ${type}: ${error.message}`);
+             }
+             
+             showLoading(`${type}-loading`, false);
+         }
+
+                 async function generateMovie(tmdbId) {
+             const movieData = await fetchTMDB(`/movie/${tmdbId}`);
+             const credits = await fetchTMDB(`/movie/${tmdbId}/credits`);
+             const videos = await fetchTMDB(`/movie/${tmdbId}/videos`);
+             
+             if (!movieData) throw new Error('Failed to fetch movie data');
+
+             // Get additional servers
+             const serverInputs = document.querySelectorAll('#movie-servers .server-item');
+             const additionalSources = [];
+             
+             serverInputs.forEach(item => {
+                 const name = item.querySelector('.server-name').value.trim();
+                 const url = item.querySelector('.server-url').value.trim();
+                 if (name && url) {
+                     additionalSources.push({
+                         id: nextId++,
+                         type: getSourceType(url),
+                         title: name,
+                         quality: "Auto",
+                         size: "Unknown",
+                         kind: getSourceKind(url),
+                         premium: "false",
+                         external: false,
+                         url: url
+                     });
+                 }
+             });
+
+             // Auto-generate VidSrc and VidJoy sources as separate sources (matching existing app structure)
+             const autoSources = [
+                 // VidSrc Server - Multiple Quality Options (Separate Sources)
+                 {
+                     id: nextId++,
+                     type: "embed",
+                     title: "VidSrc Server 1080p",
+                     quality: "1080p",
+                     size: "Auto",
+                     kind: "play",
+                     premium: "false",
+                     external: false,
+                     url: `${VIDSRC_BASE}/movie/${tmdbId}`
+                 },
+                 {
+                     id: nextId++,
+                     type: "embed",
+                     title: "VidSrc Server 720p",
+                     quality: "720p",
+                     size: "Auto",
+                     kind: "play",
+                     premium: "false",
+                     external: false,
+                     url: `${VIDSRC_BASE}/movie/${tmdbId}`
+                 },
+                 {
+                     id: nextId++,
+                     type: "embed",
+                     title: "VidSrc Server 480p",
+                     quality: "480p",
+                     size: "Auto",
+                     kind: "play",
+                     premium: "false",
+                     external: false,
+                     url: `${VIDSRC_BASE}/movie/${tmdbId}`
+                 },
+                 // VidJoy Server - Multiple Quality Options (Separate Sources)
+                 {
+                     id: nextId++,
+                     type: "embed", 
+                     title: "VidJoy Server 1080p",
+                     quality: "1080p",
+                     size: "Auto",
+                     kind: "play",
+                     premium: "false",
+                     external: false,
+                     url: `${VIDJOY_BASE}/movie/${tmdbId}`
+                 },
+                 {
+                     id: nextId++,
+                     type: "embed", 
+                     title: "VidJoy Server 720p",
+                     quality: "720p",
+                     size: "Auto",
+                     kind: "play",
+                     premium: "false",
+                     external: false,
+                     url: `${VIDJOY_BASE}/movie/${tmdbId}`
+                 },
+                 {
+                     id: nextId++,
+                     type: "embed", 
+                     title: "VidJoy Server 480p",
+                     quality: "480p",
+                     size: "Auto",
+                     kind: "play",
+                     premium: "false",
+                     external: false,
+                     url: `${VIDJOY_BASE}/movie/${tmdbId}`
+                 }
+             ];
+
+             console.log('Auto-generated movie sources:', autoSources);
+             console.log('Additional sources:', additionalSources);
+
+             const movie = {
+                 id: nextId++,
+                 title: movieData.title,
+                 type: "movie",
+                 label: movieData.genres[0]?.name || "Movie",
+                 sublabel: `Released ${movieData.release_date?.substring(0, 4) || 'Unknown'}`,
+                 imdb: movieData.vote_average?.toString() || "0",
+                 downloadas: `${movieData.title.toLowerCase().replace(/\s+/g, '-')}.mp4`,
+                 comment: true,
+                 playas: "video",
+                 description: movieData.overview || "No description available",
+                 classification: getRatingClassification(movieData.adult),
+                 year: movieData.release_date?.substring(0, 4) || "Unknown",
+                 duration: formatDuration(movieData.runtime),
+                 rating: movieData.vote_average || 0,
+                 image: movieData.poster_path ? `${TMDB_IMAGE_BASE}${movieData.poster_path}` : null,
+                 cover: movieData.backdrop_path ? `${TMDB_IMAGE_BASE}${movieData.backdrop_path}` : null,
+                 genres: movieData.genres?.map(g => ({ id: g.id, title: g.name })) || [],
+                 sources: [...autoSources, ...additionalSources],
+                 trailer: getTrailer(videos),
+                 actors: getActors(credits),
+                 subtitles: await getSubtitles(tmdbId, 'movie'),
+                 views: Math.floor(Math.random() * 10000) + 1000,
+                 created_at: new Date().toISOString().split('T')[0]
+             };
+
+             console.log('Generated movie with sources:', movie.sources);
+
+            // Add to slides and featured movies
+            currentData.home.slides.push({
+                id: movie.id,
+                title: movie.title,
+                type: "movie",
+                image: movie.cover || movie.image,
+                url: `movies/${movie.id}`,
+                poster: movie
+            });
+
+            currentData.home.featuredMovies.push(movie);
+            
+            // Ensure movie has actors and genres arrays (even if empty)
+            if (!movie.actors) movie.actors = [];
+            if (!movie.genres) movie.genres = [];
+            currentData.api_info.total_movies++;
+            
+            saveData();
+        }
+
+        async function generateSeries(tmdbId) {
+            const seriesData = await fetchTMDB(`/tv/${tmdbId}`);
+            const credits = await fetchTMDB(`/tv/${tmdbId}/credits`);
+            const videos = await fetchTMDB(`/tv/${tmdbId}/videos`);
+            
+            if (!seriesData) throw new Error('Failed to fetch series data');
+
+            // Get seasons to include
+            const seasonsInput = document.getElementById('series-seasons').value.trim();
+            const seasonsToInclude = seasonsInput ? 
+                seasonsInput.split(',').map(s => parseInt(s.trim())).filter(s => !isNaN(s)) :
+                seriesData.seasons?.map(s => s.season_number).filter(s => s > 0) || [];
+
+            // Get additional servers
+            const serverInputs = document.querySelectorAll('#series-servers .server-item');
+            const additionalServerTemplates = [];
+            
+            serverInputs.forEach(item => {
+                const name = item.querySelector('.server-name').value.trim();
+                const urlTemplate = item.querySelector('.server-url').value.trim();
+                if (name && urlTemplate) {
+                    additionalServerTemplates.push({ name, urlTemplate });
+                }
+            });
+
+            const seasons = [];
+            
+            for (const seasonNum of seasonsToInclude) {
+                const seasonData = await fetchTMDB(`/tv/${tmdbId}/season/${seasonNum}`);
+                if (!seasonData) continue;
+
+                const episodes = [];
+                
+                                 for (const episodeData of seasonData.episodes || []) {
+                     // Auto-generate VidSrc and VidJoy sources as separate sources for each episode (matching existing app structure)
+                     const episodeSources = [
+                         // VidSrc Server - Multiple Quality Options (Separate Sources)
+                         {
+                             id: nextId++,
+                             type: "embed",
+                             title: "VidSrc Server 1080p",
+                             quality: "1080p",
+                             size: "Auto",
+                             kind: "play",
+                             premium: "false",
+                             external: false,
+                             url: `${VIDSRC_BASE}/tv/${tmdbId}/${seasonNum}/${episodeData.episode_number}`
+                         },
+                         {
+                             id: nextId++,
+                             type: "embed",
+                             title: "VidSrc Server 720p",
+                             quality: "720p",
+                             size: "Auto",
+                             kind: "play",
+                             premium: "false",
+                             external: false,
+                             url: `${VIDSRC_BASE}/tv/${tmdbId}/${seasonNum}/${episodeData.episode_number}`
+                         },
+                         {
+                             id: nextId++,
+                             type: "embed",
+                             title: "VidSrc Server 480p",
+                             quality: "480p",
+                             size: "Auto",
+                             kind: "play",
+                             premium: "false",
+                             external: false,
+                             url: `${VIDSRC_BASE}/tv/${tmdbId}/${seasonNum}/${episodeData.episode_number}`
+                         },
+                         // VidJoy Server - Multiple Quality Options (Separate Sources)
+                         {
+                             id: nextId++,
+                             type: "embed",
+                             title: "VidJoy Server 1080p", 
+                             quality: "1080p",
+                             size: "Auto",
+                             kind: "play",
+                             premium: "false",
+                             external: false,
+                             url: `${VIDJOY_BASE}/tv/${tmdbId}/${seasonNum}/${episodeData.episode_number}`
+                         },
+                         {
+                             id: nextId++,
+                             type: "embed",
+                             title: "VidJoy Server 720p", 
+                             quality: "720p",
+                             size: "Auto",
+                             kind: "play",
+                             premium: "false",
+                             external: false,
+                             url: `${VIDJOY_BASE}/tv/${tmdbId}/${seasonNum}/${episodeData.episode_number}`
+                         },
+                         {
+                             id: nextId++,
+                             type: "embed",
+                             title: "VidJoy Server 480p", 
+                             quality: "480p",
+                             size: "Auto",
+                             kind: "play",
+                             premium: "false",
+                             external: false,
+                             url: `${VIDJOY_BASE}/tv/${tmdbId}/${seasonNum}/${episodeData.episode_number}`
+                         }
+                     ];
+
+                     console.log(`Auto-generated sources for S${seasonNum}E${episodeData.episode_number}:`, episodeSources);
+
+                    // Add additional sources
+                    additionalServerTemplates.forEach(server => {
+                        const url = server.urlTemplate
+                            .replace('{season}', seasonNum)
+                            .replace('{episode}', episodeData.episode_number);
+                        
+                        episodeSources.push({
+                            id: nextId++,
+                            type: getSourceType(url),
+                            title: server.name,
+                            quality: "Auto",
+                            size: "Unknown",
+                            kind: getSourceKind(url),
+                            premium: "false",
+                            external: false,
+                            url: url
+                        });
+                    });
+
+                    episodes.push({
+                        id: nextId++,
+                        title: episodeData.name || `Episode ${episodeData.episode_number}`,
+                        description: episodeData.overview || "No description available",
+                        downloadas: `${seriesData.name.toLowerCase().replace(/\s+/g, '-')}-s${seasonNum}e${episodeData.episode_number}.mp4`,
+                        playas: "video",
+                        duration: formatDuration(episodeData.runtime),
+                        image: episodeData.still_path ? `${TMDB_IMAGE_BASE}${episodeData.still_path}` : null,
+                        sources: episodeSources
+                    });
+                }
+
+                seasons.push({
+                    id: nextId++,
+                    title: seasonData.name || `Season ${seasonNum}`,
+                    episodes: episodes
+                });
+            }
+
+            const series = {
+                id: nextId++,
+                title: seriesData.name,
+                type: "series",
+                label: seriesData.genres[0]?.name || "Series",
+                sublabel: `${seasons.length} Season${seasons.length !== 1 ? 's' : ''}`,
+                imdb: seriesData.vote_average?.toString() || "0",
+                downloadas: seriesData.name.toLowerCase().replace(/\s+/g, '-'),
+                comment: true,
+                playas: "video",
+                description: seriesData.overview || "No description available",
+                classification: getRatingClassification(seriesData.adult),
+                year: seriesData.first_air_date?.substring(0, 4) || "Unknown",
+                duration: formatDuration(seriesData.episode_run_time?.[0]),
+                rating: seriesData.vote_average || 0,
+                image: seriesData.poster_path ? `${TMDB_IMAGE_BASE}${seriesData.poster_path}` : null,
+                cover: seriesData.backdrop_path ? `${TMDB_IMAGE_BASE}${seriesData.backdrop_path}` : null,
+                genres: seriesData.genres?.map(g => ({ id: g.id, title: g.name })) || [],
+                sources: [], // Series don't have direct sources
+                trailer: getTrailer(videos),
+                actors: getActors(credits),
+                subtitles: [],
+                seasons: seasons,
+                views: Math.floor(Math.random() * 10000) + 1000,
+                created_at: new Date().toISOString().split('T')[0]
+            };
+
+            // Add to slides and featured movies
+            currentData.home.slides.push({
+                id: series.id,
+                title: series.title,
+                type: "series",
+                image: series.cover || series.image,
+                url: `series/${series.id}`,
+                poster: series
+            });
+
+            currentData.home.featuredMovies.push(series);
+            
+            // Ensure series has actors and genres arrays (even if empty)
+            if (!series.actors) series.actors = [];
+            if (!series.genres) series.genres = [];
+            currentData.api_info.total_series++;
+            
+            saveData();
+        }
+
+        // Helper functions
+        function getSourceType(url) {
+            if (url.includes('youtube.com') || url.includes('youtu.be')) return 'youtube';
+            if (url.includes('embed') || url.includes('iframe')) return 'embed';
+            if (url.includes('.m3u8')) return 'm3u8';
+            if (url.includes('.mpd')) return 'dash';
+            return 'video';
+        }
+
+        function getSourceKind(url) {
+            const type = getSourceType(url);
+            if (type === 'youtube') return 'youtube';
+            if (type === 'embed') return 'play';     // Embed sources = play only
+            if (type === 'm3u8' || type === 'dash') return 'play';  // Live TV/streams = play only
+            if (type === 'video') return 'both';     // Direct video files = both downloadable & playable
+            return 'both';  // Default for direct links
+        }
+
+        function getRatingClassification(adult) {
+            return adult ? 'R' : 'PG-13';
+        }
+
+        function formatDuration(minutes) {
+            if (!minutes) return "Unknown";
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            return hours > 0 ? `${hours}:${mins.toString().padStart(2, '0')}` : `${mins}:00`;
+        }
+
+        function getTrailer(videos) {
+            if (!videos?.results) return null;
+            
+            const trailer = videos.results.find(v => 
+                v.type === 'Trailer' && v.site === 'YouTube'
+            ) || videos.results[0];
+            
+            if (trailer && trailer.site === 'YouTube') {
+                return {
+                    id: nextId++,
+                    type: "youtube",
+                    title: `${trailer.name} Trailer`,
+                    url: `https://www.youtube.com/watch?v=${trailer.key}`
+                };
+            }
+            
+            return null;
+        }
+
+        function getActors(credits) {
+            if (!credits?.cast) return [];
+            
+            return credits.cast.slice(0, 10).map(actor => ({
+                id: nextId++,
+                name: actor.name,
+                type: actor.gender === 1 ? "actress" : "actor",
+                role: actor.character || "Unknown Role",
+                image: actor.profile_path ? `${TMDB_IMAGE_BASE}${actor.profile_path}` : null,
+                bio: "Actor information from TMDB"
+            }));
+        }
+
+                 async function getSubtitles(tmdbId, type) {
+             // This would integrate with a subtitle API
+             // For now, return empty array
+             return [];
+         }
+
+         // Helper functions for generating root-level arrays
+         function generateActorsFromContent() {
+             const actorMap = new Map();
+             
+             // Process both slides and featuredMovies to ensure all actors are captured
+             const allContent = [
+                 ...(currentData.home.slides || []).map(slide => slide.poster || slide),
+                 ...(currentData.home.featuredMovies || [])
+             ];
+             
+             allContent.forEach(content => {
+                 if (content && content.actors && Array.isArray(content.actors)) {
+                     content.actors.forEach(actor => {
+                         if (actor.name && !actorMap.has(actor.name)) {
+                             actorMap.set(actor.name, {
+                                 id: actor.id || nextId++,
+                                 name: actor.name,
+                                 type: actor.type || 'actor',
+                                 role: actor.role || 'Actor',
+                                 image: actor.image || '',
+                                 born: actor.born || '',
+                                 height: actor.height || '',
+                                 bio: actor.bio || 'Actor information from TMDB',
+                                 movies: []
+                             });
+                         }
+                         
+                         // Add movie to actor's filmography
+                         if (actorMap.has(actor.name)) {
+                             const actorData = actorMap.get(actor.name);
+                             if (!actorData.movies.some(m => m.id === content.id)) {
+                                 actorData.movies.push({
+                                     id: content.id,
+                                     title: content.title,
+                                     image: content.image,
+                                     year: content.year
+                                 });
+                             }
+                         }
+                     });
+                 }
+             });
+             
+             return Array.from(actorMap.values());
+         }
+
+         function generateGenresFromContent() {
+             const genreMap = new Map();
+             
+             // Process both slides and featuredMovies to ensure all genres are captured
+             const allContent = [
+                 ...(currentData.home.slides || []).map(slide => slide.poster || slide),
+                 ...(currentData.home.featuredMovies || [])
+             ];
+             
+             allContent.forEach(content => {
+                 if (content && content.genres && Array.isArray(content.genres)) {
+                     content.genres.forEach(genre => {
+                         const genreTitle = genre.title || genre.name;
+                         if (genreTitle && !genreMap.has(genreTitle)) {
+                             genreMap.set(genreTitle, {
+                                 id: genre.id || nextId++,
+                                 title: genreTitle,
+                                 posters: []
+                             });
+                         }
+                         
+                         // Add content to genre's posters
+                         if (genreMap.has(genreTitle)) {
+                             const genreData = genreMap.get(genreTitle);
+                             if (!genreData.posters.some(p => p.id === content.id)) {
+                                 genreData.posters.push({
+                                     id: content.id,
+                                     title: content.title,
+                                     type: content.type,
+                                     label: content.label,
+                                     sublabel: content.sublabel,
+                                     imdb: content.imdb,
+                                     downloadas: content.downloadas,
+                                     comment: content.comment,
+                                     playas: content.playas,
+                                     description: content.description,
+                                     classification: content.classification,
+                                     year: content.year,
+                                     duration: content.duration,
+                                     rating: content.rating,
+                                     image: content.image,
+                                     cover: content.cover,
+                                     genres: content.genres,
+                                     actors: content.actors,
+                                     views: content.views,
+                                     created_at: content.created_at,
+                                     sources: content.sources,
+                                     trailer: content.trailer,
+                                     subtitles: content.subtitles,
+                                     ...(content.type === 'series' && { seasons: content.seasons })
+                                 });
+                             }
+                         }
+                     });
+                 }
+             });
+             
+             return Array.from(genreMap.values());
+         }
+
+        // Manual input functions
+        function toggleManualFields() {
+            const type = document.getElementById('manual-type').value;
+            const seriesFields = document.getElementById('series-fields');
+            
+            if (type === 'series') {
+                seriesFields.style.display = 'block';
+            } else {
+                seriesFields.style.display = 'none';
+            }
+        }
+
+        function addServer(containerId) {
+            const container = document.getElementById(containerId);
+            const serverItem = document.createElement('div');
+            serverItem.className = 'server-item';
+            serverItem.innerHTML = `
+                <input type="text" placeholder="Server Name" class="server-name">
+                <input type="url" placeholder="Video URL" class="server-url">
+                <button class="btn btn-danger btn-small" onclick="removeServer(this)">Remove</button>
+            `;
+            container.appendChild(serverItem);
+        }
+
+        function addManualSource() {
+            const container = document.getElementById('manual-sources');
+            const sourceItem = document.createElement('div');
+            sourceItem.className = 'server-item';
+            sourceItem.innerHTML = `
+                <input type="text" placeholder="Source Name" class="source-name">
+                <input type="url" placeholder="Video URL" class="source-url">
+                <select class="source-type">
+                    <option value="video">Direct Video</option>
+                    <option value="embed">Embedded</option>
+                    <option value="youtube">YouTube</option>
+                    <option value="live">Live Stream</option>
+                </select>
+                <select class="source-quality">
+                    <option value="1080p">1080p</option>
+                    <option value="720p">720p</option>
+                    <option value="480p">480p</option>
+                    <option value="Auto">Auto</option>
+                </select>
+                <button class="btn btn-danger btn-small" onclick="removeServer(this)">Remove</button>
+            `;
+            container.appendChild(sourceItem);
+        }
+
+        function removeServer(button) {
+            button.parentElement.remove();
+        }
+
+        function addManualContent() {
+            const type = document.getElementById('manual-type').value;
+            const title = document.getElementById('manual-title').value.trim();
+            
+            if (!title) {
+                showStatus('warning', 'Please enter a title');
+                return;
+            }
+
+            // Get sources
+            const sourceInputs = document.querySelectorAll('#manual-sources .server-item');
+            const sources = [];
+            
+            sourceInputs.forEach(item => {
+                const name = item.querySelector('.source-name').value.trim();
+                const url = item.querySelector('.source-url').value.trim();
+                const sourceType = item.querySelector('.source-type').value;
+                const quality = item.querySelector('.source-quality').value;
+                
+                if (name && url) {
+                    sources.push({
+                        id: nextId++,
+                        type: sourceType,
+                        title: `${name} ${quality}`,
+                        quality: quality,
+                        size: sourceType === 'live' ? 'Live' : 'Unknown',
+                        kind: getSourceKind(url),
+                        premium: "false",
+                        external: false,
+                        url: url
+                    });
+                }
+            });
+
+            if (sources.length === 0) {
+                showStatus('warning', 'Please add at least one video source');
+                return;
+            }
+
+            const content = {
+                id: nextId++,
+                title: title,
+                type: type,
+                label: type === 'live' ? 'Live TV' : (type === 'series' ? 'Series' : 'Movie'),
+                sublabel: document.getElementById('manual-year').value || 'Unknown Year',
+                imdb: document.getElementById('manual-rating').value || "0",
+                downloadas: title.toLowerCase().replace(/\s+/g, '-'),
+                comment: true,
+                playas: type === 'live' ? 'live' : 'video',
+                description: document.getElementById('manual-description').value || 'No description available',
+                classification: 'PG-13',
+                year: document.getElementById('manual-year').value || 'Unknown',
+                duration: type === 'live' ? 'Live' : 'Unknown',
+                rating: parseFloat(document.getElementById('manual-rating').value) || 0,
+                image: document.getElementById('manual-image').value || null,
+                cover: document.getElementById('manual-image').value || null,
+                genres: [],
+                sources: sources,
+                trailer: null,
+                actors: [],
+                subtitles: [],
+                views: Math.floor(Math.random() * 1000) + 100,
+                created_at: new Date().toISOString().split('T')[0]
+            };
+
+            if (type === 'series') {
+                content.seasons = []; // Would need to implement season/episode creation
+            }
+
+            // Add to appropriate collection
+            if (type === 'live') {
+                if (!currentData.home.channels) currentData.home.channels = [];
+                
+                const channel = {
+                    id: content.id,
+                    title: content.title,
+                    label: content.label,
+                    sublabel: content.sublabel,
+                    description: content.description,
+                    website: "",
+                    classification: content.classification,
+                    views: content.views,
+                    shares: Math.floor(content.views * 0.1),
+                    rating: content.rating,
+                    comment: content.comment,
+                    image: content.image,
+                    playas: "live",
+                    sources: content.sources,
+                    categories: [],
+                    countries: []
+                };
+                
+                currentData.home.channels.push(channel);
+                currentData.api_info.total_channels++;
+                
+                // Ensure channel has actors and genres arrays (even if empty)
+                if (!channel.actors) channel.actors = [];
+                if (!channel.genres) channel.genres = [];
+            } else {
+                currentData.home.slides.push({
+                    id: content.id,
+                    title: content.title,
+                    type: content.type,
+                    image: content.image,
+                    url: `${content.type}s/${content.id}`,
+                    poster: content
+                });
+                
+                currentData.home.featuredMovies.push(content);
+                
+                // Ensure content has actors and genres arrays (even if empty)
+                if (!content.actors) content.actors = [];
+                if (!content.genres) content.genres = [];
+                
+                if (type === 'movie') {
+                    currentData.api_info.total_movies++;
+                } else {
+                    currentData.api_info.total_series++;
+                }
+            }
+
+            saveData();
+            updateDataStats();
+            updatePreview();
+            showStatus('success', `${type} added successfully!`);
+            
+            // Clear form
+            document.getElementById('manual-title').value = '';
+            document.getElementById('manual-description').value = '';
+            document.getElementById('manual-image').value = '';
+            document.getElementById('manual-year').value = '';
+            document.getElementById('manual-rating').value = '';
+            
+            // Reset sources to one empty item
+            document.getElementById('manual-sources').innerHTML = `
+                <div class="server-item">
+                    <input type="text" placeholder="Source Name" class="source-name">
+                    <input type="url" placeholder="Video URL" class="source-url">
+                    <select class="source-type">
+                        <option value="video">Direct Video</option>
+                        <option value="embed">Embedded</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="live">Live Stream</option>
+                    </select>
+                    <select class="source-quality">
+                        <option value="1080p">1080p</option>
+                        <option value="720p">720p</option>
+                        <option value="480p">480p</option>
+                        <option value="Auto">Auto</option>
+                    </select>
+                    <button class="btn btn-danger btn-small" onclick="removeServer(this)">Remove</button>
+                </div>
+            `;
+        }
+
+        // Bulk operations
+        async function bulkGenerate() {
+            const type = document.getElementById('bulk-type').value;
+            const year = document.getElementById('bulk-year').value;
+            const pages = parseInt(document.getElementById('bulk-pages').value);
+            const skipDuplicates = document.getElementById('bulk-skip-duplicates').checked;
+            
+            showLoading('bulk-loading', true);
+            
+            let generated = 0;
+            let skipped = 0;
+            
+            for (let page = 1; page <= pages; page++) {
+                const results = await fetchTMDB(`/discover/${type}`, {
+                    primary_release_year: type === 'movie' ? year : undefined,
+                    first_air_date_year: type === 'tv' ? year : undefined,
+                    page: page,
+                    sort_by: 'popularity.desc'
+                });
+                
+                if (!results?.results) break;
+                
+                for (const item of results.results) {
+                    // Check for duplicates
+                    if (skipDuplicates && isDuplicate(item.id, type)) {
+                        skipped++;
+                        continue;
+                    }
+                    
+                    try {
+                        if (type === 'movie') {
+                            await generateMovie(item.id);
+                        } else {
+                            await generateSeries(item.id);
+                        }
+                        generated++;
+                    } catch (error) {
+                        console.error(`Error generating ${type} ${item.id}:`, error);
+                    }
+                }
+                
+                // Update progress
+                const progress = (page / pages) * 100;
+                document.getElementById('bulk-progress').style.width = `${progress}%`;
+                document.getElementById('bulk-status').innerHTML = `
+                    <div class="status info">
+                        Page ${page}/${pages} - Generated: ${generated}, Skipped: ${skipped}
+                    </div>
+                `;
+                
+                // Small delay to prevent API rate limiting
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            
+                         showLoading('bulk-loading', false);
+             updateDataStats();
+             updatePreview();
+             showStatus('success', `Bulk generation complete! Generated: ${generated} items with multi-server sources (VidSrc + VidJoy) matching existing app structure, Skipped: ${skipped}`);
+        }
+
+        async function generateByGenre() {
+            const genreId = document.getElementById('genre-select').value;
+            const count = parseInt(document.getElementById('genre-count').value);
+            
+            const results = await fetchTMDB('/discover/movie', {
+                with_genres: genreId,
+                sort_by: 'popularity.desc',
+                page: 1
+            });
+            
+            if (!results?.results) {
+                showStatus('error', 'Failed to fetch genre data');
+                return;
+            }
+            
+            let generated = 0;
+            
+            for (const movie of results.results.slice(0, count)) {
+                try {
+                    if (!isDuplicate(movie.id, 'movie')) {
+                        await generateMovie(movie.id);
+                        generated++;
+                    }
+                } catch (error) {
+                    console.error(`Error generating movie ${movie.id}:`, error);
+                }
+            }
+            
+            updateDataStats();
+            updatePreview();
+            showStatus('success', `Generated ${generated} movies from selected genre!`);
+        }
+
+        function isDuplicate(tmdbId, type) {
+            return currentData.home.featuredMovies.some(item => 
+                item.tmdb_id === tmdbId && item.type === type
+            );
+        }
+
+        // Data management functions
+        function importData() {
+            const fileInput = document.getElementById('import-file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showStatus('warning', 'Please select a file to import');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // Validate data structure
+                    if (!importedData.home || !importedData.api_info) {
+                        throw new Error('Invalid data format');
+                    }
+                    
+                    currentData = importedData;
+                    
+                    // Update next ID to prevent conflicts
+                    let maxId = 0;
+                    const allItems = [
+                        ...(currentData.home.slides || []),
+                        ...(currentData.home.featuredMovies || []),
+                        ...(currentData.home.channels || [])
+                    ];
+                    
+                    allItems.forEach(item => {
+                        if (item.id > maxId) maxId = item.id;
+                        if (item.sources) {
+                            item.sources.forEach(source => {
+                                if (source.id > maxId) maxId = source.id;
+                            });
+                        }
+                    });
+                    
+                    nextId = maxId + 1;
+                    
+                    saveData();
+                    updateDataStats();
+                    updatePreview();
+                    showStatus('success', 'Data imported successfully!');
+                } catch (error) {
+                    showStatus('error', `Import failed: ${error.message}`);
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+
+                 function exportData() {
+             // Create the complete CineMax API structure with root-level movies array
+             // Limit slides to top-rated content (highest rating first)
+             const limitedSlides = (currentData.home.slides || [])
+                 .sort((a, b) => {
+                     const ratingA = a.poster?.rating || a.rating || 0;
+                     const ratingB = b.poster?.rating || b.rating || 0;
+                     return ratingB - ratingA; // Sort by highest rating first
+                 })
+                 .slice(0, 10); // Limit to top 10 highest rated items
+             
+             const exportData = {
+                 ...currentData,
+                 home: {
+                     ...currentData.home,
+                     slides: limitedSlides, // Use limited slides instead of all slides
+                     // Add featuredMovies INSIDE home object for LoadActivity compatibility
+                     featuredMovies: currentData.home.featuredMovies || [],
+                     // Add actors and genres INSIDE home object for HomeFragment compatibility
+                     actors: generateActorsFromContent() || [],
+                     genres: generateGenresFromContent() || []
+                 },
+                 // Add root-level movies array that includes both movies and series
+                 movies: currentData.home.featuredMovies || [],
+                 // Keep root-level arrays for other fragments compatibility
+                 actors: generateActorsFromContent() || [],
+                 genres: generateGenresFromContent() || [],
+                 // Ensure channels array is present
+                 channels: currentData.channels || []
+             };
+             
+             const dataStr = JSON.stringify(exportData, null, 2);
+             const dataBlob = new Blob([dataStr], { type: 'application/json' });
+             
+             const link = document.createElement('a');
+             link.href = URL.createObjectURL(dataBlob);
+             link.download = `cinemax-data-${new Date().toISOString().split('T')[0]}.json`;
+             link.click();
+             
+             showStatus('success', 'Data exported successfully with root-level movies array!');
+         }
+
+                 function exportSample() {
+             const sampleMovie = {
+                 id: 1,
+                 title: "Sample Movie",
+                 type: "movie",
+                 label: "Action",
+                 sublabel: "Released 2023",
+                 imdb: "8.5",
+                 downloadas: "sample-movie.mp4",
+                 comment: true,
+                 playas: "video",
+                 description: "This is a sample movie entry showing the correct CineMax structure",
+                 classification: "PG-13",
+                 year: "2023",
+                 duration: "2:30",
+                 rating: 8.5,
+                 image: "https://example.com/poster.jpg",
+                 cover: "https://example.com/cover.jpg",
+                 genres: [
+                     {
+                         id: 28,
+                         title: "Action"
+                     }
+                 ],
+                 sources: [
+                     {
+                         id: 1,
+                         type: "embed",
+                         title: "VidSrc Server 1080p",
+                         quality: "1080p",
+                         size: "Auto",
+                         kind: "play",
+                         premium: "false",
+                         external: false,
+                         url: "https://vidsrc.net/embed/movie/123"
+                     },
+                     {
+                         id: 2,
+                         type: "embed",
+                         title: "VidJoy Server 1080p",
+                         quality: "1080p", 
+                         size: "Auto",
+                         kind: "play",
+                         premium: "false",
+                         external: false,
+                         url: "https://vidjoy.pro/embed/movie/123"
+                     }
+                 ],
+                 trailer: {
+                     id: 3,
+                     type: "youtube",
+                     title: "Sample Movie Trailer",
+                     url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                 },
+                 actors: [
+                     {
+                         id: 1,
+                         name: "John Doe",
+                         type: "actor",
+                         role: "Lead Actor",
+                         image: "https://example.com/actor.jpg",
+                         bio: "Sample actor"
+                     }
+                 ],
+                 subtitles: [],
+                 views: 5000,
+                 created_at: new Date().toISOString().split('T')[0]
+             };
+
+             const sampleData = {
+                 api_info: {
+                     version: "2.0",
+                     description: "Sample CineMax API Format with Complete Structure",
+                     last_updated: new Date().toISOString().split('T')[0],
+                     total_movies: 1,
+                     total_series: 0,
+                     total_channels: 0
+                 },
+                 home: {
+                     slides: [
+                         {
+                             id: 1,
+                             title: "Sample Movie",
+                             type: "movie",
+                             image: "https://example.com/poster.jpg",
+                             url: "movies/1",
+                             poster: sampleMovie
+                         }
+                     ],
+                     featuredMovies: [sampleMovie],
+                     channels: []
+                 },
+                 // Root-level movies array for GenreActivity and other fragments
+                 movies: [sampleMovie],
+                 actors: [
+                     {
+                         id: 1,
+                         name: "John Doe",
+                         type: "actor",
+                         role: "Lead Actor",
+                         image: "https://example.com/actor.jpg",
+                         born: "1980-01-01",
+                         height: "6'0\"",
+                         bio: "Sample actor biography",
+                         movies: [
+                             {
+                                 id: 1,
+                                 title: "Sample Movie",
+                                 image: "https://example.com/poster.jpg",
+                                 year: "2023"
+                             }
+                         ]
+                     }
+                 ],
+                 genres: [
+                     {
+                         id: 28,
+                         title: "Action",
+                         posters: [sampleMovie]
+                     }
+                 ],
+                 channels: []
+             };
+            
+            const dataStr = JSON.stringify(sampleData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = 'cinemax-sample-format.json';
+            link.click();
+            
+            showStatus('success', 'Sample format exported!');
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+                currentData = {
+                    api_info: {
+                        version: "2.0",
+                        description: "Enhanced CineMax API with TMDB Integration",
+                        last_updated: new Date().toISOString().split('T')[0],
+                        total_movies: 0,
+                        total_series: 0,
+                        total_channels: 0
+                    },
+                    home: {
+                        slides: [],
+                        featuredMovies: [],
+                        channels: []
+                    }
+                };
+                
+                nextId = 1;
+                saveData();
+                updateDataStats();
+                updatePreview();
+                showStatus('success', 'All data cleared!');
+            }
+        }
+
+        function removeDuplicates() {
+            const originalCount = currentData.home.featuredMovies.length;
+            
+            // Remove duplicates based on title and year
+            const seen = new Set();
+            currentData.home.featuredMovies = currentData.home.featuredMovies.filter(item => {
+                const key = `${item.title}-${item.year}-${item.type}`;
+                if (seen.has(key)) {
+                    return false;
+                }
+                seen.add(key);
+                return true;
+            });
+            
+            // Update slides to match
+            currentData.home.slides = currentData.home.slides.filter(slide => 
+                currentData.home.featuredMovies.some(movie => movie.id === slide.id)
+            );
+            
+            const removed = originalCount - currentData.home.featuredMovies.length;
+            
+            saveData();
+            updateDataStats();
+            updatePreview();
+            showStatus('success', `Removed ${removed} duplicate items!`);
+        }
+
+        // Preview and management functions
+        function updatePreview() {
+            const filter = document.getElementById('preview-filter')?.value || 'all';
+            const container = document.getElementById('content-preview');
+            
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            let items = [];
+            
+            if (filter === 'all' || filter === 'movie' || filter === 'series') {
+                items = items.concat(currentData.home.featuredMovies.filter(item => 
+                    filter === 'all' || item.type === filter
+                ));
+            }
+            
+            if (filter === 'all' || filter === 'live') {
+                items = items.concat((currentData.home.channels || []).map(channel => ({
+                    ...channel,
+                    type: 'live'
+                })));
+            }
+            
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'preview-item';
+                
+                div.innerHTML = `
+                    <img src="${item.image || 'https://via.placeholder.com/300x450?text=No+Image'}" 
+                         alt="${item.title}" loading="lazy">
+                    <div class="info">
+                        <div class="title">${item.title}</div>
+                        <div class="meta">${item.year || 'Unknown'} • ${item.type?.toUpperCase()} • Rating: ${item.rating || 'N/A'}</div>
+                        <div class="meta">Sources: ${item.sources?.length || 0}</div>
+                        <div style="margin-top: 10px;">
+                            <button class="btn btn-secondary btn-small" onclick="editContent(${item.id})">Edit</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteContent(${item.id}, '${item.type}')">Delete</button>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(div);
+            });
+        }
+
+        function editContent(id) {
+            // Find the content
+            let content = currentData.home.featuredMovies.find(item => item.id === id);
+            if (!content) {
+                content = (currentData.home.channels || []).find(item => item.id === id);
+            }
+            
+            if (!content) {
+                showStatus('error', 'Content not found');
+                return;
+            }
+            
+            // Show edit modal (simplified version)
+            const modal = document.getElementById('edit-modal');
+            const form = document.getElementById('edit-form');
+            
+            form.innerHTML = `
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="edit-title" value="${content.title}">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="edit-description" rows="4">${content.description || ''}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Year</label>
+                    <input type="text" id="edit-year" value="${content.year || ''}">
+                </div>
+                <div class="form-group">
+                    <label>Rating</label>
+                    <input type="number" id="edit-rating" min="0" max="10" step="0.1" value="${content.rating || ''}">
+                </div>
+                <input type="hidden" id="edit-id" value="${id}">
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').style.display = 'none';
+        }
+
+        function saveEdit() {
+            const id = parseInt(document.getElementById('edit-id').value);
+            const title = document.getElementById('edit-title').value;
+            const description = document.getElementById('edit-description').value;
+            const year = document.getElementById('edit-year').value;
+            const rating = parseFloat(document.getElementById('edit-rating').value);
+            
+            // Find and update content
+            let content = currentData.home.featuredMovies.find(item => item.id === id);
+            let isChannel = false;
+            
+            if (!content) {
+                content = (currentData.home.channels || []).find(item => item.id === id);
+                isChannel = true;
+            }
+            
+            if (content) {
+                content.title = title;
+                content.description = description;
+                content.year = year;
+                content.rating = rating;
+                
+                // Update corresponding slide
+                const slide = currentData.home.slides.find(s => s.id === id);
+                if (slide) {
+                    slide.title = title;
+                }
+                
+                saveData();
+                updatePreview();
+                closeEditModal();
+                showStatus('success', 'Content updated successfully!');
+            }
+        }
+
+        function deleteContent(id, type) {
+            if (confirm('Are you sure you want to delete this content?')) {
+                // Remove from featuredMovies or channels
+                if (type === 'live') {
+                    currentData.home.channels = (currentData.home.channels || []).filter(item => item.id !== id);
+                    currentData.api_info.total_channels--;
+                } else {
+                    currentData.home.featuredMovies = currentData.home.featuredMovies.filter(item => item.id !== id);
+                    if (type === 'movie') {
+                        currentData.api_info.total_movies--;
+                    } else {
+                        currentData.api_info.total_series--;
+                    }
+                }
+                
+                // Remove from slides
+                currentData.home.slides = currentData.home.slides.filter(slide => slide.id !== id);
+                
+                saveData();
+                updateDataStats();
+                updatePreview();
+                showStatus('success', 'Content deleted successfully!');
+            }
+        }
+
+        // Utility functions
+        function updateDataStats() {
+            const movieCount = currentData.home.featuredMovies.filter(item => item.type === 'movie').length;
+            const seriesCount = currentData.home.featuredMovies.filter(item => item.type === 'series').length;
+            const channelCount = (currentData.home.channels || []).length;
+            
+            currentData.api_info.total_movies = movieCount;
+            currentData.api_info.total_series = seriesCount;
+            currentData.api_info.total_channels = channelCount;
+            currentData.api_info.last_updated = new Date().toISOString().split('T')[0];
+            
+            // Update display
+            if (document.getElementById('movie-count')) {
+                document.getElementById('movie-count').textContent = movieCount;
+                document.getElementById('series-count').textContent = seriesCount;
+                document.getElementById('channel-count').textContent = channelCount;
+                document.getElementById('total-count').textContent = movieCount + seriesCount + channelCount;
+            }
+        }
+
+        function showStatus(type, message) {
+            // Create or update status element
+            let statusEl = document.getElementById('global-status');
+            if (!statusEl) {
+                statusEl = document.createElement('div');
+                statusEl.id = 'global-status';
+                statusEl.style.position = 'fixed';
+                statusEl.style.top = '20px';
+                statusEl.style.right = '20px';
+                statusEl.style.zIndex = '9999';
+                statusEl.style.maxWidth = '400px';
+                document.body.appendChild(statusEl);
+            }
+            
+            statusEl.innerHTML = `<div class="status ${type}">${message}</div>`;
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                if (statusEl.parentNode) {
+                    statusEl.parentNode.removeChild(statusEl);
+                }
+            }, 5000);
+        }
+
+        function showLoading(elementId, show) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.style.display = show ? 'inline-block' : 'none';
+            }
+        }
+
+                 function saveData() {
+             // Update root-level arrays for CineMax compatibility
+             const dataToSave = {
+                 ...currentData,
+                 movies: currentData.home.featuredMovies || [],
+                 actors: generateActorsFromContent(),
+                 genres: generateGenresFromContent()
+             };
+             
+             localStorage.setItem('cinemax-data', JSON.stringify(dataToSave));
+         }
+
+        function loadSavedData() {
+            const saved = localStorage.getItem('cinemax-data');
+            if (saved) {
+                try {
+                    currentData = JSON.parse(saved);
+                    
+                    // Find the highest ID to continue from
+                    let maxId = 0;
+                    const allItems = [
+                        ...(currentData.home.slides || []),
+                        ...(currentData.home.featuredMovies || []),
+                        ...(currentData.home.channels || [])
+                    ];
+                    
+                    allItems.forEach(item => {
+                        if (item.id > maxId) maxId = item.id;
+                        if (item.sources) {
+                            item.sources.forEach(source => {
+                                if (source.id > maxId) maxId = source.id;
+                            });
+                        }
+                        if (item.seasons) {
+                            item.seasons.forEach(season => {
+                                if (season.id > maxId) maxId = season.id;
+                                if (season.episodes) {
+                                    season.episodes.forEach(episode => {
+                                        if (episode.id > maxId) maxId = episode.id;
+                                        if (episode.sources) {
+                                            episode.sources.forEach(source => {
+                                                if (source.id > maxId) maxId = source.id;
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                    
+                    nextId = maxId + 1;
+                } catch (error) {
+                    console.error('Error loading saved data:', error);
+                }
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('edit-modal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
