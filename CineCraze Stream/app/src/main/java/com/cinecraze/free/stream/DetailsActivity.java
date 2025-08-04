@@ -453,8 +453,19 @@ public class DetailsActivity extends AppCompatActivity {
             return;
         }
         
-        if (currentServers.size() == 1) {
-            // If only one server, play directly
+        // Check if this is direct link or live TV content (non-embedded)
+        boolean hasNonEmbeddedServers = false;
+        for (Server server : currentServers) {
+            if (!VideoServerUtils.isEmbeddedVideoUrl(server.getUrl())) {
+                hasNonEmbeddedServers = true;
+                break;
+            }
+        }
+        
+        // For direct links and live TV, always show server selection dialog
+        // For embedded content, if only one server, play directly
+        if (currentServers.size() == 1 && !hasNonEmbeddedServers) {
+            // If only one server and it's embedded, play directly
             playServer(0);
             return;
         }
