@@ -104,7 +104,7 @@ public class DetailsActivity extends AppCompatActivity {
         try {
             initializeViews();
             setupData();
-            // Removed setupVideoPlayer() call since video playback is handled by floating action button
+            setupVideoPlayer(); // Restored - needed for proper initialization
         } catch (Exception e) {
             Log.e(TAG, "Error in onCreate: " + e.getMessage(), e);
             Toast.makeText(this, "Error loading content: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -456,17 +456,52 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void updateServerSelector() {
-        currentServers = getCurrentServers();
         if (currentServers != null && !currentServers.isEmpty()) {
-            serverSelectorContainer.setVisibility(View.VISIBLE);
             updateServerButtonText();
             updateServerInfo();
-        } else {
-            serverSelectorContainer.setVisibility(View.GONE);
         }
     }
     
-    // Removed setupVideoPlayer method since video playback is handled by floating action button
+    private void setupVideoPlayer() {
+        String videoUrl = getCurrentVideoUrl();
+        
+        if (videoUrl != null && !videoUrl.isEmpty()) {
+            try {
+                // Use the enhanced CustomPlayerFragment that handles both embedded and direct videos
+                customPlayerFragment = CustomPlayerFragment.newInstance(
+                    videoUrl,
+                    false, // isLive
+                    VideoServerUtils.getVideoType(videoUrl),
+                    currentEntry != null ? currentEntry.getTitle() : "Video",
+                    currentEntry != null ? currentEntry.getDescription() : "",
+                    currentEntry != null ? currentEntry.getImageUrl() : "",
+                    currentEntry != null ? currentEntry.getId() : 0,
+                    "movie" // or "tv" based on content type
+                );
+                
+                // Add fragment to container
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.replace(R.id.player_container, customPlayerFragment);
+                transaction.commit();
+                
+            } catch (Exception e) {
+                Log.e(TAG, "Error setting up video player: " + e.getMessage(), e);
+                Toast.makeText(this, "Error setting up video player", Toast.LENGTH_LONG).show();
+            }
+        } else {
+            Log.w(TAG, "No video URL available");
+            Toast.makeText(this, "No video URL available", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private String getCurrentVideoUrl() {
+        if (currentServers != null && currentServers.size() > currentServerIndex) {
+            String url = currentServers.get(currentServerIndex).getUrl();
+            return VideoServerUtils.enhanceVideoUrl(url);
+        }
+        return null;
+    }
 
     private List<Server> getCurrentServers() {
         // For TV series, get servers from current episode
