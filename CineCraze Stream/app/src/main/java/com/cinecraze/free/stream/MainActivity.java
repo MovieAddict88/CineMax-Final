@@ -580,8 +580,9 @@ public class MainActivity extends AppCompatActivity {
         updatePaginationUI();
         
         // Additional check to ensure Next button is properly disabled when no more data
-        if (btnNext != null && (!hasMorePages || ((currentPage + 1) * pageSize >= totalCount))) {
-            btnNext.setEnabled(false);
+        if (btnNextPage != null && (!hasMorePages || ((currentPage + 1) * pageSize >= totalCount))) {
+            btnNextPage.setEnabled(false);
+            btnNextPage.setAlpha(0.5f);
         }
         
         // Scroll to top of the list
