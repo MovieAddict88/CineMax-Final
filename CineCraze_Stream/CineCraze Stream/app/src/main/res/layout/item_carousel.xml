@@ -95,8 +95,9 @@
         android:layout_centerInParent="true"
         android:layout_margin="16dp"
         android:src="@drawable/ic_play_arrow"
+        android:translationZ="10dp"
         app:backgroundTint="@color/netflix_red"
-        app:elevation="8dp"
+        app:elevation="12dp"
         app:fabSize="normal" />
 
 </RelativeLayout>

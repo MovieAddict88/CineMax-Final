@@ -108,8 +108,9 @@
                         android:layout_marginRight="24dp"
                         android:layout_marginBottom="24dp"
                         android:src="@drawable/ic_play_arrow"
+                        android:translationZ="10dp"
                         app:backgroundTint="#FF6B35"
-                        app:elevation="8dp"
+                        app:elevation="12dp"
                         app:fabSize="normal" />
 
                 </RelativeLayout>
