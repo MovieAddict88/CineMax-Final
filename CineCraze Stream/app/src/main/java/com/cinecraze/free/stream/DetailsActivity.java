@@ -101,7 +101,7 @@ public class DetailsActivity extends AppCompatActivity {
         try {
             initializeViews();
             setupData();
-            setupVideoPlayer();
+            // REMOVED: setupVideoPlayer(); - Don't auto-start video player
         } catch (Exception e) {
             Log.e(TAG, "Error in onCreate: " + e.getMessage(), e);
             Toast.makeText(this, "Error loading content: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -322,7 +322,6 @@ public class DetailsActivity extends AppCompatActivity {
                 currentServerIndex = 0; // Reset server index
                 setupEpisodeAdapter();
                 updateServerSelector();
-                setupVideoPlayer();
                 dialog.dismiss();
             });
             builder.show();
