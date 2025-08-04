@@ -292,8 +292,10 @@ public class DetailsActivity extends AppCompatActivity {
                 public void onEpisodeClick(Episode episode, int position) {
                     currentEpisode = episode;
                     currentServerIndex = 0; // Reset server index for new episode
-                    // Directly play the episode (CinemaX style - no floating button needed for series)
-                    playCurrentEpisode();
+                    // Update server list for the selected episode
+                    updateServerSelector();
+                    // Show server selection dialog for episode (like movies)
+                    showServerSelectionDialog();
                 }
                 
                 @Override
@@ -680,25 +682,7 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
     
-    // CinemaX-style episode play functionality
-    private void playCurrentEpisode() {
-        if (currentEpisode != null && currentEpisode.getServers() != null && !currentEpisode.getServers().isEmpty()) {
-            // Get the current server for the episode
-            Server currentServer = currentEpisode.getServers().get(currentServerIndex);
-            String videoUrl = currentServer.getUrl();
-            
-            // Start fullscreen player directly (CinemaX style)
-            FullScreenActivity.start(this, videoUrl, 0, true, currentServerIndex);
-            
-            // Update episode adapter to show as viewed
-            if (episodeAdapter != null) {
-                episodeAdapter.notifyDataSetChanged();
-            }
-        } else {
-            // Fallback to showing server selection if no servers available
-            showServerSelectionDialog();
-        }
-    }
+
     
     private void downloadEpisode(Episode episode) {
         if (episode != null && episode.getServers() != null && !episode.getServers().isEmpty()) {
