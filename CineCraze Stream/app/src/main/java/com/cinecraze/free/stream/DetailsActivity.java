@@ -22,6 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.util.Log;
+import android.content.Intent;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -445,6 +446,24 @@ public class DetailsActivity extends AppCompatActivity {
         // Fragment handles its own cleanup
     }
     
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        
+        if (requestCode == 1001) {
+            // FullScreenActivity finished
+            isInFullscreen = false;
+            
+            if (resultCode == RESULT_OK && data != null) {
+                // Handle any result data if needed
+                long finalPosition = data.getLongExtra("final_position", 0);
+                boolean wasPlaying = data.getBooleanExtra("was_playing", false);
+                
+                Log.d(TAG, "Video player finished - Position: " + finalPosition + ", Was playing: " + wasPlaying);
+            }
+        }
+    }
+    
     // CinemaX-style dialog and action methods
     
     private void showServerSelectionDialog() {
@@ -453,11 +472,12 @@ public class DetailsActivity extends AppCompatActivity {
             return;
         }
         
-        if (currentServers.size() == 1) {
-            // If only one server, play directly
-            playServer(0);
-            return;
-        }
+        // Remove auto-play logic - always show dialog for user selection
+        // if (currentServers.size() == 1) {
+        //     // If only one server, play directly
+        //     playServer(0);
+        //     return;
+        // }
         
         // Create bottom dialog similar to CinemaX
         serverSelectionDialog = new Dialog(this, android.R.style.Theme_Dialog);
@@ -503,6 +523,9 @@ public class DetailsActivity extends AppCompatActivity {
             // Update current server index
             currentServerIndex = serverIndex;
             
+            // Stop any existing video player before starting new one
+            stopCurrentVideoPlayer();
+            
             // Load the video using existing player infrastructure
             loadVideoFromServer(selectedServer);
             
@@ -512,8 +535,27 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
     
+    private void stopCurrentVideoPlayer() {
+        // Send broadcast to stop any existing FullScreenActivity
+        Intent stopIntent = new Intent("STOP_VIDEO_PLAYER");
+        sendBroadcast(stopIntent);
+        
+        // Reset fullscreen state
+        isInFullscreen = false;
+        
+        // Small delay to ensure the broadcast is processed
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+    
     private void loadVideoFromServer(Server server) {
         try {
+            // Set fullscreen state to true
+            isInFullscreen = true;
+            
             // Launch FullScreenActivity in landscape mode like CinemaX
             String videoUrl = VideoServerUtils.enhanceVideoUrl(server.getUrl());
             FullScreenActivity.start(this, videoUrl, 0, true, currentServerIndex);
@@ -524,6 +566,7 @@ public class DetailsActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e(TAG, "Error loading video from server: " + e.getMessage(), e);
             Toast.makeText(this, "Error loading video: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            isInFullscreen = false;
         }
     }
     
@@ -567,9 +610,8 @@ public class DetailsActivity extends AppCompatActivity {
             
             // Set click listener
             holder.imageViewServerPlay.setOnClickListener(v -> {
-                String videoUrl = currentServers.get(position).getUrl();
-                FullScreenActivity.start(DetailsActivity.this, videoUrl, 0, true, position);
-                if (serverSelectionDialog != null) serverSelectionDialog.dismiss();
+                // Use the proper playServer method instead of direct launch
+                playServer(position);
             });
         }
         
