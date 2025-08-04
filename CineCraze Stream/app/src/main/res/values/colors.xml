@@ -34,6 +34,10 @@
     <color name="primary">#E50914</color>
     <color name="dark_surface">#0F0F0F</color>
     
+    <!-- CinemaX-style colors -->
+    <color name="cinemaX_accent">#ffa100</color>
+    <color name="cinemaX_white_text">#BDBDBD</color>
+    
     <!-- Bubble Navigation Colors -->
     <color name="yellow">#FFD700</color>
     <color name="red">#FF4444</color>

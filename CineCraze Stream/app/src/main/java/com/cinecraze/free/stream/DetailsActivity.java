@@ -75,9 +75,8 @@ public class DetailsActivity extends AppCompatActivity {
     
     // TV Series components
     private LinearLayout seasonSelectorContainer;
-    private Button seasonSpinnerButton;
-    private TextView seasonInfoText;
-    private LinearLayout episodeSelectorContainer;
+    private androidx.appcompat.widget.AppCompatSpinner seasonSpinner;
+    private LinearLayout seriesSeasonsContainer;
     private RecyclerView episodeRecyclerView;
     
     // Enhanced video source selection
@@ -94,6 +93,7 @@ public class DetailsActivity extends AppCompatActivity {
     private Season currentSeason;
     private Episode currentEpisode;
     private List<Server> currentServers;
+    private EpisodeAdapter episodeAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,12 +136,10 @@ public class DetailsActivity extends AppCompatActivity {
         serverSpinnerButton = findViewById(R.id.server_spinner_button);
         serverInfoText = findViewById(R.id.server_info_text);
         
-        // Initialize TV Series components
-        seasonSelectorContainer = findViewById(R.id.season_selector_container);
-        seasonSpinnerButton = findViewById(R.id.season_spinner_button);
-        seasonInfoText = findViewById(R.id.season_info_text);
-        episodeSelectorContainer = findViewById(R.id.episode_selector_container);
-        episodeRecyclerView = findViewById(R.id.episode_recycler_view);
+        // Initialize TV Series components (CinemaX-style)
+        seriesSeasonsContainer = findViewById(R.id.linear_layout_activity_serie_seasons);
+        seasonSpinner = findViewById(R.id.spinner_activity_serie_season_list);
+        episodeRecyclerView = findViewById(R.id.recycle_view_activity_activity_serie_episodes);
         
         // Setup click listeners
         setupClickListeners();
@@ -155,12 +153,9 @@ public class DetailsActivity extends AppCompatActivity {
         linearLayoutMovieMyList.setOnClickListener(v -> toggleMyList());
         linearLayoutMovieShare.setOnClickListener(v -> shareMovie());
         
-        // Legacy server/season selectors (for compatibility)
+        // Legacy server selector (for compatibility)
         if (serverSpinnerButton != null) {
             serverSpinnerButton.setOnClickListener(v -> showServerSpinner());
-        }
-        if (seasonSpinnerButton != null) {
-            seasonSpinnerButton.setOnClickListener(v -> showSeasonSpinner());
         }
     }
 
@@ -207,11 +202,8 @@ public class DetailsActivity extends AppCompatActivity {
                 setupTVSeriesComponents();
             } else {
                 // Hide season selector for movies
-                if (seasonSelectorContainer != null) {
-                    seasonSelectorContainer.setVisibility(View.GONE);
-                }
-                if (episodeSelectorContainer != null) {
-                    episodeSelectorContainer.setVisibility(View.GONE);
+                if (seriesSeasonsContainer != null) {
+                    seriesSeasonsContainer.setVisibility(View.GONE);
                 }
             }
         } else {
@@ -244,40 +236,71 @@ public class DetailsActivity extends AppCompatActivity {
 
     private void setupTVSeriesComponents() {
         if (currentEntry.getSeasons() != null && !currentEntry.getSeasons().isEmpty()) {
-            seasonSelectorContainer.setVisibility(View.VISIBLE);
-            episodeSelectorContainer.setVisibility(View.VISIBLE);
+            seriesSeasonsContainer.setVisibility(View.VISIBLE);
             
-            // Setup season adapter
-            setupSeasonAdapter();
+            // Setup season spinner adapter
+            setupSeasonSpinner();
             
             // Select first season by default
             if (!currentEntry.getSeasons().isEmpty()) {
                 currentSeason = currentEntry.getSeasons().get(0);
-                updateSeasonButtonText();
+                currentSeasonIndex = 0;
                 setupEpisodeAdapter();
             }
         } else {
-            seasonSelectorContainer.setVisibility(View.GONE);
-            episodeSelectorContainer.setVisibility(View.GONE);
+            seriesSeasonsContainer.setVisibility(View.GONE);
         }
     }
 
-    private void setupSeasonAdapter() {
-        // For now, we'll use a simple spinner approach
-        // You can enhance this with a custom adapter if needed
-        updateSeasonButtonText();
+    private void setupSeasonSpinner() {
+        if (seasonSpinner != null && currentEntry.getSeasons() != null && !currentEntry.getSeasons().isEmpty()) {
+            // Create season names array for spinner
+            String[] seasonNames = new String[currentEntry.getSeasons().size()];
+            for (int i = 0; i < currentEntry.getSeasons().size(); i++) {
+                seasonNames[i] = "Season " + currentEntry.getSeasons().get(i).getSeason();
+            }
+            
+            // Create and set adapter
+            android.widget.ArrayAdapter<String> adapter = new android.widget.ArrayAdapter<>(
+                this, android.R.layout.simple_spinner_dropdown_item, seasonNames);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            seasonSpinner.setAdapter(adapter);
+            
+            // Set spinner selection listener
+            seasonSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(android.widget.AdapterView<?> parent, android.view.View view, int position, long id) {
+                    if (position != currentSeasonIndex) {
+                        currentSeasonIndex = position;
+                        currentSeason = currentEntry.getSeasons().get(position);
+                        setupEpisodeAdapter();
+                    }
+                }
+                
+                @Override
+                public void onNothingSelected(android.widget.AdapterView<?> parent) {
+                    // Do nothing
+                }
+            });
+        }
     }
 
     private void setupEpisodeAdapter() {
         if (currentSeason != null && currentSeason.getEpisodes() != null && !currentSeason.getEpisodes().isEmpty()) {
-            episodeRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-            EpisodeAdapter episodeAdapter = new EpisodeAdapter(this, currentSeason.getEpisodes(), new EpisodeAdapter.OnEpisodeClickListener() {
+            episodeRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+            episodeAdapter = new EpisodeAdapter(this, currentSeason.getEpisodes(), new EpisodeAdapter.OnEpisodeClickListener() {
                 @Override
                 public void onEpisodeClick(Episode episode, int position) {
                     currentEpisode = episode;
                     currentServerIndex = 0; // Reset server index for new episode
-                    updateServerSelector();
-                    setupVideoPlayer();
+                    // Directly play the episode (CinemaX style - no floating button needed for series)
+                    playCurrentEpisode();
+                }
+                
+                @Override
+                public void onEpisodeDownload(Episode episode, int position) {
+                    // Handle episode download
+                    downloadEpisode(episode);
                 }
             });
             episodeRecyclerView.setAdapter(episodeAdapter);
@@ -365,17 +388,7 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void updateSeasonButtonText() {
-        if (currentSeason != null) {
-            seasonSpinnerButton.setText("Season " + currentSeason.getSeason());
-        }
-    }
 
-    private void updateSeasonInfo() {
-        if (currentSeason != null && currentSeason.getEpisodes() != null) {
-            seasonInfoText.setText(currentSeason.getEpisodes().size() + " episodes");
-        }
-    }
 
     private void updateServerSelector() {
         currentServers = getCurrentServers();
@@ -667,6 +680,38 @@ public class DetailsActivity extends AppCompatActivity {
                 textViewServerQuality = itemView.findViewById(R.id.text_view_server_quality);
                 imageViewServerPlay = itemView.findViewById(R.id.image_view_server_play);
             }
+        }
+    }
+    
+    // CinemaX-style episode play functionality
+    private void playCurrentEpisode() {
+        if (currentEpisode != null && currentEpisode.getServers() != null && !currentEpisode.getServers().isEmpty()) {
+            // Get the current server for the episode
+            Server currentServer = currentEpisode.getServers().get(currentServerIndex);
+            String videoUrl = currentServer.getUrl();
+            
+            // Start fullscreen player directly (CinemaX style)
+            FullScreenActivity.start(this, videoUrl, 0, true, currentServerIndex);
+            
+            // Update episode adapter to show as viewed
+            if (episodeAdapter != null) {
+                episodeAdapter.notifyDataSetChanged();
+            }
+        } else {
+            // Fallback to showing server selection if no servers available
+            showServerSelectionDialog();
+        }
+    }
+    
+    private void downloadEpisode(Episode episode) {
+        if (episode != null && episode.getServers() != null && !episode.getServers().isEmpty()) {
+            // For now, show a simple message
+            Toast.makeText(this, "Download functionality coming soon for: " + episode.getTitle(), Toast.LENGTH_SHORT).show();
+            
+            // TODO: Implement actual download functionality
+            // You can integrate with DownloadManager or custom download service here
+        } else {
+            Toast.makeText(this, "No download sources available", Toast.LENGTH_SHORT).show();
         }
     }
 }

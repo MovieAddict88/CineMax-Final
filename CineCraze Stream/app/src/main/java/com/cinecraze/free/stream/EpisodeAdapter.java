@@ -24,6 +24,7 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
 
     public interface OnEpisodeClickListener {
         void onEpisodeClick(Episode episode, int position);
+        void onEpisodeDownload(Episode episode, int position);
     }
 
     public EpisodeAdapter(Context context, List<Episode> episodes, OnEpisodeClickListener listener) {
@@ -43,22 +44,63 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Episode episode = episodes.get(position);
         
-        holder.episodeNumber.setText("Episode " + episode.getEpisode());
+        // Set episode title
         holder.episodeTitle.setText(episode.getTitle());
-        holder.episodeDuration.setText(episode.getDuration());
         
+        // Set episode description if available
+        if (episode.getDescription() != null && !episode.getDescription().isEmpty()) {
+            holder.episodeDescription.setText(episode.getDescription());
+            holder.episodeDescription.setVisibility(View.VISIBLE);
+        } else {
+            holder.episodeDescription.setVisibility(View.GONE);
+        }
+        
+        // Set episode duration
+        if (episode.getDuration() != null && !episode.getDuration().isEmpty()) {
+            holder.episodeDuration.setText(episode.getDuration());
+            holder.episodeDuration.setVisibility(View.VISIBLE);
+        } else {
+            holder.episodeDuration.setVisibility(View.GONE);
+        }
+        
+        // Load episode thumbnail
         if (episode.getThumbnail() != null && !episode.getThumbnail().isEmpty()) {
-            Glide.with(context).load(episode.getThumbnail()).into(holder.episodeThumbnail);
+            Glide.with(context)
+                .load(episode.getThumbnail())
+                .placeholder(R.drawable.image_placeholder)
+                .error(R.drawable.image_placeholder)
+                .into(holder.episodeThumbnail);
+        } else {
+            holder.episodeThumbnail.setImageResource(R.drawable.image_placeholder);
         }
         
         // Highlight selected episode
         holder.itemView.setSelected(position == selectedEpisodePosition);
         
-        holder.itemView.setOnClickListener(v -> {
+        // Show/hide viewed indicator
+        if (position < selectedEpisodePosition) {
+            holder.viewedIndicator.setVisibility(View.VISIBLE);
+        } else {
+            holder.viewedIndicator.setVisibility(View.GONE);
+        }
+        
+        // Set click listeners for direct episode play (CinemaX style)
+        View.OnClickListener episodeClickListener = v -> {
             selectedEpisodePosition = position;
             notifyDataSetChanged();
             if (listener != null) {
                 listener.onEpisodeClick(episode, position);
+            }
+        };
+        
+        // Both the entire item and the play button should trigger episode play
+        holder.itemView.setOnClickListener(episodeClickListener);
+        holder.playButton.setOnClickListener(episodeClickListener);
+        
+        // Download button functionality
+        holder.downloadButton.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onEpisodeDownload(episode, position);
             }
         });
     }
@@ -73,18 +115,30 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
         notifyDataSetChanged();
     }
 
+    public void updateEpisodes(List<Episode> newEpisodes) {
+        this.episodes = newEpisodes;
+        notifyDataSetChanged();
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView episodeThumbnail;
-        TextView episodeNumber;
+        ImageView playButton;
+        ImageView downloadButton;
+        ImageView viewedIndicator;
         TextView episodeTitle;
+        TextView episodeDescription;
         TextView episodeDuration;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            episodeThumbnail = itemView.findViewById(R.id.episode_thumbnail);
-            episodeNumber = itemView.findViewById(R.id.episode_number);
-            episodeTitle = itemView.findViewById(R.id.episode_title);
-            episodeDuration = itemView.findViewById(R.id.episode_duration);
+            // Map to CinemaX-style IDs
+            episodeThumbnail = itemView.findViewById(R.id.image_view_item_episode_thumbail);
+            playButton = itemView.findViewById(R.id.image_view_item_episode_play);
+            downloadButton = itemView.findViewById(R.id.image_view_item_episode_download);
+            viewedIndicator = itemView.findViewById(R.id.image_view_item_episode_viewed);
+            episodeTitle = itemView.findViewById(R.id.text_view_item_episode_title);
+            episodeDescription = itemView.findViewById(R.id.text_view_item_episode_description);
+            episodeDuration = itemView.findViewById(R.id.text_view_item_episode_duration);
         }
     }
 }
