@@ -453,21 +453,18 @@ public class DetailsActivity extends AppCompatActivity {
             return;
         }
         
-        // Check if this is direct link or live TV content (non-embedded)
-        boolean hasNonEmbeddedServers = false;
-        for (Server server : currentServers) {
-            if (!VideoServerUtils.isEmbeddedVideoUrl(server.getUrl())) {
-                hasNonEmbeddedServers = true;
-                break;
-            }
-        }
+        Log.d(TAG, "showServerSelectionDialog called with " + currentServers.size() + " servers");
         
-        // For direct links and live TV, always show server selection dialog
-        // For embedded content, if only one server, play directly
-        if (currentServers.size() == 1 && !hasNonEmbeddedServers) {
-            // If only one server and it's embedded, play directly
-            playServer(0);
-            return;
+        // FOR NOW: ALWAYS SHOW SERVER SELECTION DIALOG
+        // This ensures the user always chooses a server before playback
+        // We can add back auto-play logic for embedded content later if needed
+        
+        String mainCategory = currentEntry != null ? currentEntry.getMainCategory() : "";
+        Log.d(TAG, "Content category: " + mainCategory);
+        
+        for (int i = 0; i < currentServers.size(); i++) {
+            Server server = currentServers.get(i);
+            Log.d(TAG, "Server " + i + ": " + server.getName() + " - " + server.getUrl());
         }
         
         // Create bottom dialog similar to CinemaX
