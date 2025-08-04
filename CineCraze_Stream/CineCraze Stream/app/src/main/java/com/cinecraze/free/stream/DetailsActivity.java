@@ -37,6 +37,7 @@ import com.cinecraze.free.stream.models.Server;
 import com.cinecraze.free.stream.utils.VideoServerUtils;
 import com.cinecraze.free.stream.player.CustomPlayerFragment;
 import com.google.gson.Gson;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -221,15 +222,12 @@ public class DetailsActivity extends AppCompatActivity {
     }
     
     private void loadMovieImages() {
-        // TODO: Implement image loading using Picasso or Glide
-        // For now, we'll use placeholder images
+        // Use Glide to load thumbnail and poster images
         if (imageViewMovieBackground != null && currentEntry.getThumbnail() != null) {
-            // Load backdrop image from thumbnail
-            // Picasso.get().load(currentEntry.getThumbnail()).into(imageViewMovieBackground);
+            Glide.with(this).load(currentEntry.getThumbnail()).into(imageViewMovieBackground);
         }
         if (imageViewMovieCover != null && currentEntry.getPoster() != null) {
-            // Load poster image
-            // Picasso.get().load(currentEntry.getPoster()).into(imageViewMovieCover);
+            Glide.with(this).load(currentEntry.getPoster()).into(imageViewMovieCover);
         }
     }
 
@@ -658,7 +656,11 @@ public class DetailsActivity extends AppCompatActivity {
             holder.imageViewServerPremium.setVisibility(View.GONE);
             
             // Set click listener
-            holder.imageViewServerPlay.setOnClickListener(v -> playServer(position));
+            holder.imageViewServerPlay.setOnClickListener(v -> {
+                String videoUrl = currentServers.get(position).getUrl();
+                FullScreenActivity.start(DetailsActivity.this, videoUrl, 0, true, position);
+                if (serverSelectionDialog != null) serverSelectionDialog.dismiss();
+            });
         }
         
         @Override
