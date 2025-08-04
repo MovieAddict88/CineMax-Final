@@ -2,6 +2,7 @@ package com.cinecraze.free.stream;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.widget.ImageButton;
@@ -23,6 +24,7 @@ import com.cinecraze.free.stream.utils.VideoServerUtils;
 import android.view.View;
 import android.view.WindowManager;
 import android.net.Uri;
+import android.content.BroadcastReceiver;
 
 public class FullScreenActivity extends AppCompatActivity implements 
         CustomPlayerView.PlayerDoubleTapListener,
@@ -49,6 +51,8 @@ public class FullScreenActivity extends AppCompatActivity implements
             R.drawable.ic_fill,
             R.drawable.ic_zoom
     };
+    
+    private BroadcastReceiver stopReceiver;
 
     public static void start(Context context, String videoUrl, long currentPosition, boolean wasPlaying, int serverIndex) {
         Intent intent = new Intent(context, FullScreenActivity.class);
@@ -90,6 +94,27 @@ public class FullScreenActivity extends AppCompatActivity implements
         }
 
         setupButtons();
+        setupStopReceiver();
+    }
+    
+    private void setupStopReceiver() {
+        stopReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if ("STOP_VIDEO_PLAYER".equals(intent.getAction())) {
+                    // Stop the current player and finish the activity
+                    if (player != null) {
+                        player.stop();
+                        player.release();
+                        player = null;
+                    }
+                    finish();
+                }
+            }
+        };
+        
+        IntentFilter filter = new IntentFilter("STOP_VIDEO_PLAYER");
+        registerReceiver(stopReceiver, filter);
     }
 
     private void initializeViews() {
@@ -341,7 +366,8 @@ public class FullScreenActivity extends AppCompatActivity implements
     @Override
     protected void onPause() {
         super.onPause();
-        if (player != null && !isFinishing()) {
+        if (player != null) {
+            // Always pause the player when activity is paused
             player.pause();
         }
     }
@@ -352,6 +378,14 @@ public class FullScreenActivity extends AppCompatActivity implements
         if (player != null) {
             player.release();
             player = null;
+        }
+        if (stopReceiver != null) {
+            try {
+                unregisterReceiver(stopReceiver);
+            } catch (IllegalArgumentException e) {
+                // Receiver might already be unregistered
+            }
+            stopReceiver = null;
         }
     }
 }
